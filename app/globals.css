@@ -1,0 +1,255 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f4f0e8;
+  --foreground: #18221d;
+  --muted: #667069;
+  --line: #d8d2c6;
+  --paper: #faf8f2;
+  --accent: #e85d3f;
+  --green: #193f32;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+a { color: inherit; text-decoration: none; }
+.shell { min-height: 100vh; overflow: hidden; }
+
+.topbar, .hero, .workflow, .principles, footer {
+  width: min(1180px, calc(100% - 48px));
+  margin-inline: auto;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 82px;
+  border-bottom: 1px solid var(--line);
+}
+
+.brand {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 17px;
+  font-weight: 720;
+  letter-spacing: -0.03em;
+}
+
+.brandMark {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: #fff9ef;
+  background: var(--accent);
+  font-family: Georgia, serif;
+  font-size: 20px;
+  font-style: italic;
+}
+
+.buildBadge {
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  background: rgb(250 248 242 / 0.45);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+
+.hero { position: relative; padding: 116px 0 128px; }
+
+.hero::after {
+  position: absolute;
+  top: 86px;
+  right: -70px;
+  width: 390px;
+  height: 390px;
+  border: 1px solid #d2cabd;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 76px var(--background), inset 0 0 0 77px #d2cabd;
+  opacity: 0.8;
+  content: "";
+}
+
+.eyebrow, .sectionKicker, .sectionHeading > span {
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 740;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  position: relative;
+  z-index: 1;
+  max-width: 820px;
+  margin: 20px 0 24px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(58px, 8vw, 108px);
+  font-weight: 400;
+  letter-spacing: -0.065em;
+  line-height: 0.94;
+}
+
+.heroCopy {
+  position: relative;
+  z-index: 1;
+  max-width: 640px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1.75;
+}
+
+.heroActions { display: flex; gap: 28px; align-items: center; margin-top: 40px; }
+
+.primaryButton {
+  padding: 14px 20px;
+  border-radius: 4px;
+  color: #fdf8ec;
+  background: var(--green);
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.textButton {
+  padding-bottom: 4px;
+  border-bottom: 1px solid currentColor;
+  font-size: 14px;
+  font-weight: 620;
+}
+
+.workflow { padding: 84px 0 96px; border-top: 1px solid var(--line); }
+
+.sectionHeading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 44px;
+}
+
+.sectionHeading h2, .principles h2 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(34px, 4vw, 54px);
+  font-weight: 400;
+  letter-spacing: -0.045em;
+}
+
+.stepGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin: 0;
+  background: var(--line);
+  list-style: none;
+}
+
+.stepCard { position: relative; min-height: 340px; padding: 30px; background: var(--paper); }
+.stepNumber { color: #9d988f; font-family: var(--font-geist-mono), monospace; font-size: 11px; }
+
+.stepIcon {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  margin-top: 66px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--accent);
+  font-size: 20px;
+}
+
+.stepCard h3, .principleList h3 {
+  margin: 24px 0 9px;
+  font-size: 18px;
+  letter-spacing: -0.025em;
+}
+
+.stepCard p, .principleList p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.principles {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 100px;
+  padding: 112px 0;
+  border-top: 1px solid var(--line);
+}
+
+.principles h2 { margin-top: 14px; }
+
+.principleList article {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 24px;
+  padding: 28px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.principleList article:first-child { padding-top: 0; }
+
+.principleList article > span {
+  padding-top: 3px;
+  color: var(--accent);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 11px;
+}
+
+.principleList h3 { margin-top: 0; }
+
+footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 30px 0 40px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+footer span:first-child { color: var(--foreground); font-weight: 720; }
+
+@media (max-width: 820px) {
+  .topbar, .hero, .workflow, .principles, footer { width: min(100% - 32px, 680px); }
+  .hero { padding: 82px 0 88px; }
+  .hero::after { top: 52px; right: -220px; }
+  .hero h1 { font-size: clamp(52px, 15vw, 80px); }
+  .stepGrid, .principles { grid-template-columns: 1fr; }
+  .stepCard { min-height: 270px; }
+  .stepIcon { margin-top: 34px; }
+  .principles { gap: 54px; }
+}
+
+@media (max-width: 520px) {
+  .buildBadge { display: none; }
+  .sectionHeading, footer { align-items: flex-start; flex-direction: column; gap: 12px; }
+  .heroCopy { font-size: 16px; }
+  .heroActions { align-items: flex-start; flex-direction: column; gap: 20px; }
+}
