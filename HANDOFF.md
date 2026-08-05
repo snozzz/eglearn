@@ -48,6 +48,13 @@ See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
 - Module 4 renders safe Obsidian Markdown with typed YAML, a managed-region hash and stable filenames; the UI supports download/copy plus a non-destructive `obsidian://new` clipboard shortcut and manual-copy fallback.
 - Module 5 adds two-step local-data deletion, keyboard focus styles, user/privacy/acceptance documentation, GitHub CI, and a private Sites project configuration.
 
+## Current release
+
+- Private MVP: `https://eglearn-speaking.hd701108.chatgpt.site`
+- Deployed source commit: `046c34c0b90b90609c639d6e06097970f712db7d`
+- GitHub `main` may be one documentation-only commit ahead after recording this URL; application code is identical.
+- All 33 automated tests, lint, production build, and secret scan passed before deployment.
+
 ## Commands
 
 ```bash

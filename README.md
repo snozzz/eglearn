@@ -2,6 +2,8 @@
 
 EGLearn turns a short English conversation in ChatGPT into a focused review and a trackable practice history.
 
+Private MVP: [eglearn-speaking.hd701108.chatgpt.site](https://eglearn-speaking.hd701108.chatgpt.site)
+
 ## Important account boundary
 
 - Speaking happens in the user's existing ChatGPT Plus session.
