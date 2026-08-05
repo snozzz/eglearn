@@ -27,8 +27,8 @@ See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
 
 | Module | Status | Commit | Notes |
 | --- | --- | --- | --- |
-| 0. Foundation and security | Complete | `module-0-foundation` tag | Repo, no-API architecture, site shell, Custom GPT scaffold, secret scan |
-| 1. Custom GPT and review contract | Pending | — | Tutor instructions, review schema, validation fixtures |
+| 0. Foundation and security | Complete | `9f85771` / `module-0-foundation` | Repo, no-API architecture, site shell, Custom GPT scaffold, secret scan |
+| 1. Custom GPT and review contract | Complete | `module-1-gpt-contract` tag | Tutor instructions, strict review structure, manual evals, 18 contract tests |
 | 2. Session import and history | Pending | — | Local persistence, validated import, history UI |
 | 3. Trends and retry comparison | Pending | — | Controlled error taxonomy and recurrence aggregation |
 | 4. Obsidian export | Pending | — | Markdown download/copy, optional URI shortcut |
@@ -41,6 +41,8 @@ See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
 - Custom GPT configuration root exists at `gpt/`.
 - `scripts/check-secrets.mjs` and `.githooks/pre-push` enforce credential checks.
 - Module 0 passed lint, production build, server-rendered HTML tests, a live localhost content check, and positive/negative secret-scanner checks.
+- Module 1 adds production GPT Builder instructions, the v1.0 knowledge contract, session-boundary rules, manual prompt evals, and a strict Zod parser.
+- Import validation is structural: quotes are required, but without a separately imported transcript the dashboard cannot prove they are verbatim learner utterances.
 
 ## Commands
 
@@ -54,7 +56,7 @@ npm run check
 
 ## Next concrete task
 
-Implement Module 1: add production Custom GPT instructions, formalize the session/review data contract, add evidence validation and fixtures, then update this document, commit, scan, and push.
+Implement Module 2: build the review import screen, assign local session IDs/timestamps, persist validated reviews on-device, and render a usable session history. Preserve the structural-validation disclosure in the UI.
 
 ## Open risks
 

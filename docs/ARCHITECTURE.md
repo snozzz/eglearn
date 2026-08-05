@@ -40,6 +40,8 @@ The post-voice transcript may not be verbatim. The GPT must not claim access to 
 - every correction cites a learner utterance;
 - recurrence counts come from stored records, not model memory.
 
+The MVP importer performs structural validation: it verifies that quotes exist and that scores and classifications obey the contract. Because the dashboard does not receive an independently trusted transcript, it cannot prove that a quote is a verbatim learner utterance. The UI must present quotes as GPT-supplied and leave them easy for the learner to compare with the chat. True source validation would require importing the learner transcript as a separate input and checking exact substrings, which is intentionally deferred to avoid extra copy steps.
+
 ## Components
 
 ### Custom GPT
