@@ -2,6 +2,11 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { buildProgress } from "@/lib/progress.mjs";
+import {
+  buildObsidianNewUri,
+  renderSessionMarkdown,
+  sessionMarkdownFilename,
+} from "@/lib/obsidian-export.mjs";
 import { parseReviewText } from "@/lib/review-contract.mjs";
 import { listSessions, saveSession } from "@/lib/session-store.mjs";
 
@@ -159,6 +164,10 @@ export function ReviewDashboard() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState("");
+  const [vaultName, setVaultName] = useState("");
+  const [targetFolder, setTargetFolder] = useState("EGLearn/Speaking Sessions");
+  const [exportNotice, setExportNotice] = useState("");
+  const [manualMarkdown, setManualMarkdown] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -174,6 +183,75 @@ export function ReviewDashboard() {
       });
     return () => { active = false; };
   }, []);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      setVaultName(window.localStorage.getItem("eglearn.obsidian.vault") ?? "");
+      setTargetFolder(window.localStorage.getItem("eglearn.obsidian.folder") ?? "EGLearn/Speaking Sessions");
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
+  function updateVault(value: string) {
+    setVaultName(value);
+    window.localStorage.setItem("eglearn.obsidian.vault", value);
+  }
+
+  function updateFolder(value: string) {
+    setTargetFolder(value);
+    window.localStorage.setItem("eglearn.obsidian.folder", value);
+  }
+
+  async function markdownFor(session: StoredSession) {
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+    const markdown = await renderSessionMarkdown(session, { timeZone });
+    return { markdown, filename: sessionMarkdownFilename(session, timeZone) };
+  }
+
+  async function downloadMarkdown(session: StoredSession) {
+    try {
+      const { markdown, filename } = await markdownFor(session);
+      const url = URL.createObjectURL(new Blob([markdown], { type: "text/markdown;charset=utf-8" }));
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = filename;
+      anchor.click();
+      URL.revokeObjectURL(url);
+      setExportNotice(`已准备下载 ${filename}`);
+      setManualMarkdown("");
+    } catch (error) {
+      setExportNotice(error instanceof Error ? error.message : "Markdown 生成失败。" );
+    }
+  }
+
+  async function copyMarkdown(session: StoredSession) {
+    try {
+      const { markdown } = await markdownFor(session);
+      try {
+        await navigator.clipboard.writeText(markdown);
+        setExportNotice("Markdown 已复制。可以直接在 Obsidian 新建笔记并粘贴。");
+        setManualMarkdown("");
+      } catch {
+        setManualMarkdown(markdown);
+        setExportNotice("浏览器拒绝剪贴板权限。请在下方文本框手动复制。");
+      }
+    } catch (error) {
+      setExportNotice(error instanceof Error ? error.message : "Markdown 生成失败。");
+    }
+  }
+
+  async function openInObsidian(session: StoredSession) {
+    try {
+      const { markdown, filename } = await markdownFor(session);
+      await navigator.clipboard.writeText(markdown);
+      const uri = buildObsidianNewUri({ vault: vaultName, folder: targetFolder, filename });
+      setExportNotice("已复制 Markdown，并请求 Obsidian 创建笔记；请在 Obsidian 中确认结果。");
+      setManualMarkdown("");
+      window.location.assign(uri);
+    } catch (error) {
+      setExportNotice(error instanceof Error ? error.message : "无法请求 Obsidian 创建笔记。" );
+    }
+  }
 
   function validate(event: FormEvent) {
     event.preventDefault();
@@ -311,6 +389,11 @@ export function ReviewDashboard() {
                       {session.review.nextPractice.retrySentenceEn && <code>{session.review.nextPractice.retrySentenceEn}</code>}
                     </div>
                   </div>
+                  <div className="exportActions" aria-label={`${session.review.topicEn} 导出操作`}>
+                    <button type="button" onClick={() => downloadMarkdown(session)}>下载 Markdown</button>
+                    <button type="button" onClick={() => copyMarkdown(session)}>复制 Markdown</button>
+                    <button type="button" onClick={() => openInObsidian(session)} disabled={!vaultName.trim()}>在 Obsidian 中创建</button>
+                  </div>
                 </div>
               </details>
             ))}
@@ -319,6 +402,25 @@ export function ReviewDashboard() {
       </div>
 
       <ProgressSection sessions={sessions} />
+
+      <div className="obsidianSection">
+        <div className="historyHeading">
+          <div><span className="panelLabel"><span>05</span> 可选出口</span><h3>Obsidian 设置</h3></div>
+          <span>下载 / 复制始终可用</span>
+        </div>
+        <div className="obsidianGrid">
+          <label>Vault 名称或 ID<input value={vaultName} onChange={(event) => updateVault(event.target.value)} placeholder="My English Vault" /></label>
+          <label>目标目录<input value={targetFolder} onChange={(event) => updateFolder(event.target.value)} placeholder="EGLearn/Speaking Sessions" /></label>
+          <div className="obsidianNote">
+            <strong>URI 只是快捷入口</strong>
+            <p>请先在 Vault 中创建目标目录。点击后我们只能确认已发出请求，不能读取 Vault 或验证同步结果；不会追加或覆盖现有笔记。</p>
+          </div>
+        </div>
+        {exportNotice && <p className="exportNotice" role="status">{exportNotice}</p>}
+        {manualMarkdown && (
+          <label className="manualCopy">手动复制 Markdown<textarea readOnly value={manualMarkdown} onFocus={(event) => event.currentTarget.select()} /></label>
+        )}
+      </div>
     </section>
   );
 }

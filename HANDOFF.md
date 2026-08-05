@@ -31,7 +31,7 @@ See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
 | 1. Custom GPT and review contract | Complete | `module-1-gpt-contract` tag | Tutor instructions, strict review structure, manual evals, 18 contract tests |
 | 2. Session import and history | Complete | `module-2-local-history` tag | Confirm-before-save import, IndexedDB persistence, expandable history UI |
 | 3. Trends and retry comparison | Complete | `module-3-progress` tag | Recurrence statuses, 1–5 band history, latest reappearance comparison |
-| 4. Obsidian export | Pending | — | Markdown download/copy, optional URI shortcut |
+| 4. Obsidian export | Complete | `module-4-obsidian-export` tag | Typed YAML, stable Markdown, download/copy, optional clipboard URI |
 | 5. Privacy and end-to-end validation | Pending | — | Install/deploy docs, tests, final QA |
 
 ## Current implementation
@@ -45,6 +45,7 @@ See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
 - Import validation is structural: quotes are required, but without a separately imported transcript the dashboard cannot prove they are verbatim learner utterances.
 - Module 2 adds the client-side import/preview/confirmation flow, ULID-style sortable session IDs, IndexedDB persistence, and expandable local history. Invalid reviews are revalidated at the storage boundary.
 - Module 3 aggregates only controlled rule IDs across distinct sessions, excludes `OTHER`, charts assessed 1–5 bands without percentages, and compares the latest two appearances without claiming mastery.
+- Module 4 renders safe Obsidian Markdown with typed YAML, a managed-region hash and stable filenames; the UI supports download/copy plus a non-destructive `obsidian://new` clipboard shortcut and manual-copy fallback.
 
 ## Commands
 
@@ -58,7 +59,7 @@ npm run check
 
 ## Next concrete task
 
-Implement Module 4: render stable Obsidian-compatible Markdown per session, add download/copy actions, then add an optional clipboard-based `obsidian://new` shortcut with honest success wording and no overwrite/append behavior.
+Implement Module 5: finish privacy/install documentation, add a user-facing onboarding checklist, audit accessibility and browser failure states, run full tests/security scans, and decide whether to deploy the static/local-first app or keep the MVP local for Custom GPT testing.
 
 ## Open risks
 

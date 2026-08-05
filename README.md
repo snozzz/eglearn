@@ -46,6 +46,7 @@ The pre-push hook always runs the secret scan. Local secret files and common pri
 - `lib/review-contract.mjs` — strict review parser and semantic guardrails
 - `lib/session-store.mjs` — validated IndexedDB persistence and sortable session IDs
 - `lib/progress.mjs` — controlled recurrence, score-history, and reappearance aggregation
+- `lib/obsidian-export.mjs` — safe YAML/Markdown rendering and optional Obsidian URI creation
 - `docs/ARCHITECTURE.md` — product and technical decisions
 - `HANDOFF.md` — current status for continuing in a new conversation
 - `scripts/check-secrets.mjs` — repository-wide credential preflight

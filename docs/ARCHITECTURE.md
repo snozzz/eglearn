@@ -56,7 +56,7 @@ Cross-session aggregation uses only controlled `ruleId` values. One distinct ses
 
 ### Obsidian export
 
-The first implementation will render one stable Markdown file per session and support download/copy. An `obsidian://new` shortcut may be offered as a convenience, but the UI must say “requested Obsidian to create” rather than “synced”. EGLearn remains the authoritative data store.
+Each session renders to a stable, timezone-aware Markdown filename with typed YAML properties, a hashed managed region, and a permanent `My notes` section. Download and copy are the primary paths. The optional `obsidian://new` shortcut copies the Markdown first and requests creation through the `clipboard` flag; it never uses `append`, `overwrite`, or `silent`. The UI says the request was sent and asks the user to confirm in Obsidian rather than claiming sync success. EGLearn remains the authoritative data store.
 
 ## Security guardrails
 

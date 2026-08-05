@@ -385,6 +385,11 @@ a { color: inherit; text-decoration: none; }
 .detailColumns cite { color: #8fa195; font-size: 11px; font-style: normal; }
 .detailColumns code { display: block; padding: 12px; border-radius: 4px; color: #f5f0e7; background: rgb(0 0 0 / 0.14); font-size: 12px; white-space: normal; }
 
+.exportActions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; padding-top: 18px; border-top: 1px solid rgb(255 255 255 / 0.1); }
+.exportActions button { padding: 9px 12px; border: 1px solid rgb(255 255 255 / 0.14); border-radius: 4px; cursor: pointer; color: #d8dfda; background: rgb(255 255 255 / 0.04); font-size: 10px; }
+.exportActions button:hover { border-color: #ee8067; }
+.exportActions button:disabled { cursor: not-allowed; opacity: 0.38; }
+
 .progressSection { margin-top: 92px; }
 
 .progressStats {
@@ -438,6 +443,18 @@ a { color: inherit; text-decoration: none; }
 .comparisonGrid small { color: #6f8678; font-size: 8px; text-transform: uppercase; }
 .comparisonGrid del { color: #a8918b; font-size: 11px; }
 .comparisonGrid strong { color: #e5e9e5; font-size: 11px; font-weight: 550; }
+
+.obsidianSection { margin-top: 92px; }
+.obsidianGrid { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 20px; padding: 28px 0; }
+.obsidianGrid label, .manualCopy { color: #9fb0a5; font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase; }
+.obsidianGrid input { display: block; width: 100%; margin-top: 9px; padding: 13px 14px; border: 1px solid rgb(255 255 255 / 0.14); border-radius: 4px; outline: 0; color: #e6eae7; background: #15392d; font-size: 12px; }
+.obsidianGrid input:focus { border-color: #ee8067; }
+.obsidianNote { padding: 16px 18px; border-left: 1px solid #ee8067; background: rgb(0 0 0 / 0.08); }
+.obsidianNote strong { font-size: 12px; }
+.obsidianNote p { margin: 7px 0 0; color: #8ea095; font-size: 10px; line-height: 1.6; }
+.exportNotice { margin: 0; padding: 12px 14px; border-radius: 4px; color: #c8e5d0; background: rgb(125 190 143 / 0.1); font-size: 11px; }
+.manualCopy { display: block; margin-top: 18px; }
+.manualCopy textarea { display: block; width: 100%; min-height: 180px; margin-top: 9px; padding: 14px; resize: vertical; border: 1px solid rgb(255 255 255 / 0.14); border-radius: 4px; color: #dce2dd; background: #15392d; font-family: var(--font-geist-mono), monospace; font-size: 10px; line-height: 1.55; }
 
 .principles {
   display: grid;
@@ -494,6 +511,8 @@ footer span:first-child { color: var(--foreground); font-weight: 720; }
   .previewPanel { border-top: 1px solid rgb(255 255 255 / 0.16); border-left: 0; }
   .progressGrid { grid-template-columns: 1fr; }
   .comparisonGrid { grid-template-columns: 1fr; }
+  .obsidianGrid { grid-template-columns: 1fr 1fr; }
+  .obsidianNote { grid-column: 1 / -1; }
 }
 
 @media (max-width: 520px) {
@@ -510,4 +529,6 @@ footer span:first-child { color: var(--foreground); font-weight: 720; }
   .progressStats { grid-template-columns: 1fr; }
   .trendRow { grid-template-columns: 80px 1fr 42px; gap: 10px; }
   .comparisonPanel > div:first-child { align-items: flex-start; flex-direction: column; gap: 8px; }
+  .obsidianGrid { grid-template-columns: 1fr; }
+  .obsidianNote { grid-column: auto; }
 }

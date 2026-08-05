@@ -28,4 +28,6 @@ test("server-renders the EGLearn product shell", async () => {
   assert.match(html, /只存当前浏览器的 IndexedDB/);
   assert.match(html, /从记录里看趋势/);
   assert.match(html, /没有练习机会，不判断“已掌握”/);
+  assert.match(html, /Obsidian 设置/);
+  assert.match(html, /下载 \/ 复制始终可用/);
 });
