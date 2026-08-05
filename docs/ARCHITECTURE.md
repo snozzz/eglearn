@@ -52,6 +52,8 @@ The MVP importer performs structural validation: it verifies that quotes exist a
 
 The vinext/React app imports and structurally validates reviews, assigns a sortable local session ID and import timestamp, and persists the result in IndexedDB. It presents session history without login or server writes. Issue trends and retry comparisons build on the same records. A later version may use Sites D1 and ChatGPT workspace identity if cross-device sync proves necessary.
 
+Cross-session aggregation uses only controlled `ruleId` values. One distinct session is new, two to three are repeated, and four or more are frequent; `OTHER` is never aggregated. Score charts retain the original 1–5 practice bands and omit unassessed points. A missing error is not treated as success because the system does not yet record whether the learner had a real opportunity to use the target structure.
+
 ### Obsidian export
 
 The first implementation will render one stable Markdown file per session and support download/copy. An `obsidian://new` shortcut may be offered as a convenience, but the UI must say “requested Obsidian to create” rather than “synced”. EGLearn remains the authoritative data store.

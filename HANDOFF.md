@@ -30,7 +30,7 @@ See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
 | 0. Foundation and security | Complete | `9f85771` / `module-0-foundation` | Repo, no-API architecture, site shell, Custom GPT scaffold, secret scan |
 | 1. Custom GPT and review contract | Complete | `module-1-gpt-contract` tag | Tutor instructions, strict review structure, manual evals, 18 contract tests |
 | 2. Session import and history | Complete | `module-2-local-history` tag | Confirm-before-save import, IndexedDB persistence, expandable history UI |
-| 3. Trends and retry comparison | Pending | — | Controlled error taxonomy and recurrence aggregation |
+| 3. Trends and retry comparison | Complete | `module-3-progress` tag | Recurrence statuses, 1–5 band history, latest reappearance comparison |
 | 4. Obsidian export | Pending | — | Markdown download/copy, optional URI shortcut |
 | 5. Privacy and end-to-end validation | Pending | — | Install/deploy docs, tests, final QA |
 
@@ -44,6 +44,7 @@ See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
 - Module 1 adds production GPT Builder instructions, the v1.0 knowledge contract, session-boundary rules, manual prompt evals, and a strict Zod parser.
 - Import validation is structural: quotes are required, but without a separately imported transcript the dashboard cannot prove they are verbatim learner utterances.
 - Module 2 adds the client-side import/preview/confirmation flow, ULID-style sortable session IDs, IndexedDB persistence, and expandable local history. Invalid reviews are revalidated at the storage boundary.
+- Module 3 aggregates only controlled rule IDs across distinct sessions, excludes `OTHER`, charts assessed 1–5 bands without percentages, and compares the latest two appearances without claiming mastery.
 
 ## Commands
 
@@ -57,7 +58,7 @@ npm run check
 
 ## Next concrete task
 
-Implement Module 3: aggregate controlled `ruleId` values across saved sessions, show repeated/frequent issues and honest score trends, and add a retry comparison flow without claiming mastery from missing practice opportunities.
+Implement Module 4: render stable Obsidian-compatible Markdown per session, add download/copy actions, then add an optional clipboard-based `obsidian://new` shortcut with honest success wording and no overwrite/append behavior.
 
 ## Open risks
 

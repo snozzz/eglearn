@@ -14,7 +14,7 @@ export default function Home() {
           <span className="brandMark" aria-hidden="true">e</span>
           <span>EGLearn</span>
         </a>
-        <span className="buildBadge">本地记录 · v1.0</span>
+        <span className="buildBadge">成长线索 · v1.0</span>
       </nav>
 
       <section className="hero" id="top">

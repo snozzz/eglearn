@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
+import { buildProgress } from "@/lib/progress.mjs";
 import { parseReviewText } from "@/lib/review-contract.mjs";
 import { listSessions, saveSession } from "@/lib/session-store.mjs";
 
@@ -24,6 +25,20 @@ type ReviewData = {
 };
 
 type StoredSession = { id: string; importedAt: string; review: ReviewData };
+
+type ProgressData = {
+  totalSessions: number;
+  totalLearnerWords: number;
+  repeatedIssueCount: number;
+  issueStats: Array<{ ruleId: string; labelZh: string; sessionCount: number; status: "new" | "repeated" | "frequent" }>;
+  scoreTrends: Record<string, { points: Array<{ sessionId: string; band: number }>; latestDelta: number | null }>;
+  comparisons: Array<{
+    ruleId: string;
+    labelZh: string;
+    previous: { topicEn: string; original: string; rewrite: string };
+    latest: { topicEn: string; original: string; rewrite: string };
+  }>;
+};
 
 const scoreLabels = {
   grammar: "语法",
@@ -54,6 +69,84 @@ function ScoreStrip({ review }: { review: ReviewData }) {
           </div>
         );
       })}
+    </div>
+  );
+}
+
+function ProgressSection({ sessions }: { sessions: StoredSession[] }) {
+  const progress = useMemo(() => buildProgress(sessions) as ProgressData, [sessions]);
+  const statusLabels = { new: "新问题", repeated: "反复", frequent: "高频" };
+
+  return (
+    <div className="progressSection">
+      <div className="historyHeading">
+        <div><span className="panelLabel"><span>04</span> 进步线索</span><h3>从记录里看趋势</h3></div>
+        <span>没有练习机会，不判断“已掌握”</span>
+      </div>
+
+      <div className="progressStats">
+        <div><span>练习</span><strong>{progress.totalSessions}</strong><small>sessions</small></div>
+        <div><span>开口样本</span><strong>{progress.totalLearnerWords}</strong><small>words</small></div>
+        <div><span>反复问题</span><strong>{progress.repeatedIssueCount}</strong><small>rule IDs</small></div>
+      </div>
+
+      {progress.totalSessions === 0 ? (
+        <p className="historyEmpty">保存两次以上练习后，这里会显示分档记录和反复问题。</p>
+      ) : (
+        <div className="progressGrid">
+          <div className="trendPanel">
+            <h4>练习分档记录</h4>
+            {(["grammar", "vocabulary", "communication"] as const).map((dimension) => {
+              const trend = progress.scoreTrends[dimension];
+              const delta = trend.latestDelta;
+              return (
+                <div className="trendRow" key={dimension}>
+                  <div>
+                    <span>{scoreLabels[dimension]}</span>
+                    <small>{delta === null ? "等待第二次记录" : delta === 0 ? "较上次持平" : `较上次 ${delta > 0 ? "+" : ""}${delta} 档`}</small>
+                  </div>
+                  <div className="miniBars" aria-label={`${scoreLabels[dimension]}最近分档`}>
+                    {trend.points.slice(-8).map((point) => (
+                      <i key={point.sessionId} style={{ height: `${point.band * 15}%` }} title={`${point.band} / 5`} />
+                    ))}
+                  </div>
+                  <strong>{trend.points.at(-1)?.band ?? "—"}<small>/5</small></strong>
+                </div>
+              );
+            })}
+            <p className="trendDisclaimer">分档只描述当次文字样本，不是英语等级，也不代表线性进步。</p>
+          </div>
+
+          <div className="issuePanel">
+            <h4>受控错误分类</h4>
+            {progress.issueStats.length === 0 ? <p>还没有可跨会话聚合的重点问题。</p> : (
+              <ol>
+                {progress.issueStats.slice(0, 6).map((issue) => (
+                  <li key={issue.ruleId}>
+                    <div><strong>{issue.labelZh}</strong><code>{issue.ruleId}</code></div>
+                    <span className={`recurrence ${issue.status}`}>{statusLabels[issue.status]} · {issue.sessionCount} 次</span>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </div>
+        </div>
+      )}
+
+      {progress.comparisons.length > 0 && (
+        <div className="comparisonPanel">
+          <div><h4>最近两次复现对比</h4><p>只比较同类问题再次出现时的原句；没有出现不等于已经掌握。</p></div>
+          <div className="comparisonGrid">
+            {progress.comparisons.slice(0, 3).map((comparison) => (
+              <article key={comparison.ruleId}>
+                <span>{comparison.labelZh}</span>
+                <div><small>上一次 · {comparison.previous.topicEn}</small><del>{comparison.previous.original}</del><strong>{comparison.previous.rewrite}</strong></div>
+                <div><small>最近一次 · {comparison.latest.topicEn}</small><del>{comparison.latest.original}</del><strong>{comparison.latest.rewrite}</strong></div>
+              </article>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -224,6 +317,8 @@ export function ReviewDashboard() {
           </div>
         )}
       </div>
+
+      <ProgressSection sessions={sessions} />
     </section>
   );
 }
