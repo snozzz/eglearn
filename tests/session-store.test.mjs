@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { IDBFactory } from "fake-indexeddb";
-import { createSessionId, listSessions, saveSession } from "../lib/session-store.mjs";
+import { clearSessions, createSessionId, listSessions, saveSession } from "../lib/session-store.mjs";
 import { validReview } from "./fixtures/valid-review.mjs";
 
 test("creates stable-format sortable session IDs", () => {
@@ -44,4 +44,13 @@ test("refuses to persist a review that bypasses the import parser", async () => 
     saveSession(invalid, { indexedDB: new IDBFactory() }),
     /Invalid input/,
   );
+});
+
+test("clears all local sessions only when explicitly called", async () => {
+  const indexedDB = new IDBFactory();
+  await saveSession(validReview, { indexedDB, now: 1000, randomBytes: new Uint8Array(10) });
+  assert.equal((await listSessions({ indexedDB })).length, 1);
+
+  await clearSessions({ indexedDB });
+  assert.deepEqual(await listSessions({ indexedDB }), []);
 });

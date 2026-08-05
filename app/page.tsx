@@ -14,7 +14,7 @@ export default function Home() {
           <span className="brandMark" aria-hidden="true">e</span>
           <span>EGLearn</span>
         </a>
-        <span className="buildBadge">Markdown 出口 · v1.0</span>
+        <span className="buildBadge">MVP · v1.0</span>
       </nav>
 
       <section className="hero" id="top">
@@ -82,7 +82,11 @@ export default function Home() {
 
       <footer>
         <span>EGLearn</span>
-        <span>Built around your speaking habit, not another dashboard.</span>
+        <div>
+          <span>Built around your speaking habit, not another dashboard.</span>
+          <a href="https://github.com/snozzz/eglearn/blob/main/docs/USER_GUIDE.md">使用指南</a>
+          <a href="https://github.com/snozzz/eglearn/blob/main/PRIVACY.md">隐私</a>
+        </div>
       </footer>
     </main>
   );

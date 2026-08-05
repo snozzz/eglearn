@@ -32,7 +32,7 @@ See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
 | 2. Session import and history | Complete | `module-2-local-history` tag | Confirm-before-save import, IndexedDB persistence, expandable history UI |
 | 3. Trends and retry comparison | Complete | `module-3-progress` tag | Recurrence statuses, 1–5 band history, latest reappearance comparison |
 | 4. Obsidian export | Complete | `module-4-obsidian-export` tag | Typed YAML, stable Markdown, download/copy, optional clipboard URI |
-| 5. Privacy and end-to-end validation | Pending | — | Install/deploy docs, tests, final QA |
+| 5. Privacy and end-to-end validation | Complete | `module-5-mvp` tag | Privacy/data controls, CI, user guide, acceptance checklist, private hosting config |
 
 ## Current implementation
 
@@ -46,6 +46,7 @@ See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
 - Module 2 adds the client-side import/preview/confirmation flow, ULID-style sortable session IDs, IndexedDB persistence, and expandable local history. Invalid reviews are revalidated at the storage boundary.
 - Module 3 aggregates only controlled rule IDs across distinct sessions, excludes `OTHER`, charts assessed 1–5 bands without percentages, and compares the latest two appearances without claiming mastery.
 - Module 4 renders safe Obsidian Markdown with typed YAML, a managed-region hash and stable filenames; the UI supports download/copy plus a non-destructive `obsidian://new` clipboard shortcut and manual-copy fallback.
+- Module 5 adds two-step local-data deletion, keyboard focus styles, user/privacy/acceptance documentation, GitHub CI, and a private Sites project configuration.
 
 ## Commands
 
@@ -59,10 +60,12 @@ npm run check
 
 ## Next concrete task
 
-Implement Module 5: finish privacy/install documentation, add a user-facing onboarding checklist, audit accessibility and browser failure states, run full tests/security scans, and decide whether to deploy the static/local-first app or keep the MVP local for Custom GPT testing.
+No required implementation task remains for MVP v1. The next product-validation step is user-owned: create the private Custom GPT from `gpt/INSTRUCTIONS.md` + `gpt/KNOWLEDGE.md`, run all cases in `gpt/EVALS.md`, then complete two real practices and inspect the dashboard/Obsidian flow before considering a post-voice OAuth Action.
 
 ## Open risks
 
 - Post-voice transcripts are not guaranteed to be verbatim; corrections must remain conservative.
 - Text cannot support pronunciation scoring and may not support fluency scoring without timing evidence.
 - A GPT Action requires OAuth for safe multi-user storage and cannot run inside voice, so it is deferred until the copy/import workflow is validated.
+- Browser IndexedDB is device/profile-local and can be cleared by browser settings; important sessions should be exported to Markdown.
+- Browser automation could not claim the localhost preview because the browser URL policy blocked local control. Production builds, server-render tests, live HTTP content checks, and pure IndexedDB tests provide the current automated evidence; manual visual acceptance remains in `docs/ACCEPTANCE.md`.

@@ -8,7 +8,7 @@ import {
   sessionMarkdownFilename,
 } from "@/lib/obsidian-export.mjs";
 import { parseReviewText } from "@/lib/review-contract.mjs";
-import { listSessions, saveSession } from "@/lib/session-store.mjs";
+import { clearSessions, listSessions, saveSession } from "@/lib/session-store.mjs";
 
 type ReviewScore = {
   status: "assessed" | "unassessed";
@@ -168,6 +168,7 @@ export function ReviewDashboard() {
   const [targetFolder, setTargetFolder] = useState("EGLearn/Speaking Sessions");
   const [exportNotice, setExportNotice] = useState("");
   const [manualMarkdown, setManualMarkdown] = useState("");
+  const [confirmClear, setConfirmClear] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -250,6 +251,22 @@ export function ReviewDashboard() {
       window.location.assign(uri);
     } catch (error) {
       setExportNotice(error instanceof Error ? error.message : "无法请求 Obsidian 创建笔记。" );
+    }
+  }
+
+  async function handleClearSessions() {
+    if (!confirmClear) {
+      setConfirmClear(true);
+      setExportNotice("此操作会永久删除当前浏览器里的全部练习记录。请再次点击确认。");
+      return;
+    }
+    try {
+      await clearSessions();
+      setSessions([]);
+      setConfirmClear(false);
+      setExportNotice("当前浏览器里的练习记录已全部删除，无法恢复。");
+    } catch (error) {
+      setExportNotice(error instanceof Error ? error.message : "无法清空本地记录。" );
     }
   }
 
@@ -420,6 +437,12 @@ export function ReviewDashboard() {
         {manualMarkdown && (
           <label className="manualCopy">手动复制 Markdown<textarea readOnly value={manualMarkdown} onFocus={(event) => event.currentTarget.select()} /></label>
         )}
+        <div className="dataControl">
+          <div><strong>本机数据控制</strong><p>删除只影响当前浏览器，不会删除已经下载或写入 Obsidian 的 Markdown。</p></div>
+          <button className={confirmClear ? "confirming" : ""} type="button" onClick={handleClearSessions} disabled={sessions.length === 0}>
+            {confirmClear ? "再次点击，永久删除" : "清空本机记录"}
+          </button>
+        </div>
       </div>
     </section>
   );

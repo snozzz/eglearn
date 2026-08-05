@@ -38,6 +38,8 @@ npm run check
 
 The pre-push hook always runs the secret scan. Local secret files and common private-key formats are ignored by Git. Never add real credentials to examples, fixtures, screenshots, or documentation.
 
+See the [user guide](docs/USER_GUIDE.md), [privacy statement](PRIVACY.md), and [MVP acceptance checklist](docs/ACCEPTANCE.md) before the first real practice.
+
 ## Repository map
 
 - `app/` — local-first review importer and history dashboard
