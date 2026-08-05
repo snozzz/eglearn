@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ReviewDashboard } from "./review-dashboard";
 
 export const metadata: Metadata = {
   title: "产品骨架",
@@ -13,7 +14,7 @@ export default function Home() {
           <span className="brandMark" aria-hidden="true">e</span>
           <span>EGLearn</span>
         </a>
-        <span className="buildBadge">核心契约 · v1.0</span>
+        <span className="buildBadge">本地记录 · v1.0</span>
       </nav>
 
       <section className="hero" id="top">
@@ -55,6 +56,8 @@ export default function Home() {
           </li>
         </ol>
       </section>
+
+      <ReviewDashboard />
 
       <section className="principles" id="principles" aria-labelledby="principles-title">
         <div>

@@ -50,7 +50,7 @@ The MVP importer performs structural validation: it verifies that quotes exist a
 
 ### Web dashboard
 
-The vinext/React app will import and validate reviews, then present saved sessions, issue trends, and retry comparisons. The MVP can use device-local durable storage; a later version may use Sites D1 and ChatGPT workspace identity if cross-device sync proves necessary.
+The vinext/React app imports and structurally validates reviews, assigns a sortable local session ID and import timestamp, and persists the result in IndexedDB. It presents session history without login or server writes. Issue trends and retry comparisons build on the same records. A later version may use Sites D1 and ChatGPT workspace identity if cross-device sync proves necessary.
 
 ### Obsidian export
 

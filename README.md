@@ -40,10 +40,11 @@ The pre-push hook always runs the secret scan. Local secret files and common pri
 
 ## Repository map
 
-- `app/` — EGLearn web dashboard
+- `app/` — local-first review importer and history dashboard
 - `db/` — durable practice data schema
 - `gpt/` — Custom GPT instructions and knowledge files
 - `lib/review-contract.mjs` — strict review parser and semantic guardrails
+- `lib/session-store.mjs` — validated IndexedDB persistence and sortable session IDs
 - `docs/ARCHITECTURE.md` — product and technical decisions
 - `HANDOFF.md` — current status for continuing in a new conversation
 - `scripts/check-secrets.mjs` — repository-wide credential preflight

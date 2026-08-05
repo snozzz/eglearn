@@ -24,4 +24,6 @@ test("server-renders the EGLearn product shell", async () => {
   assert.match(html, /ChatGPT Plus/);
   assert.match(html, /无需 OpenAI API/);
   assert.match(html, /Obsidian 是可选出口/);
+  assert.match(html, /把这次练习留下来/);
+  assert.match(html, /只存当前浏览器的 IndexedDB/);
 });
