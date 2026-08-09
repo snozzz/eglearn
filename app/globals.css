@@ -220,13 +220,32 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   line-height: 1;
 }
 
-.dashboardHeading > p {
+.syncSummary {
   max-width: 440px;
+}
+
+.syncSummary > p {
   margin: 0;
   color: #b9c3ba;
   font-size: 14px;
   line-height: 1.7;
 }
+
+.syncBadge {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  margin-top: 14px;
+  color: #9fb0a5;
+  font-size: 10px;
+}
+
+.syncBadge i { flex: 0 0 auto; width: 7px; height: 7px; border-radius: 50%; background: #9b8f75; }
+.syncBadge.synced i { background: #7dbe8f; }
+.syncBadge.error i { background: #ee8067; }
+.syncBadge span { flex: 1; }
+.syncBadge button { padding: 5px 8px; border: 1px solid rgb(255 255 255 / 0.14); border-radius: 4px; cursor: pointer; color: #c7d0c9; background: transparent; font-size: 9px; }
+.syncBadge button:disabled { cursor: wait; opacity: 0.45; }
 
 .dashboardGrid {
   display: grid;
@@ -462,6 +481,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .dataControl button { flex: 0 0 auto; padding: 9px 12px; border: 1px solid rgb(255 255 255 / 0.14); border-radius: 4px; cursor: pointer; color: #b7c5bc; background: transparent; font-size: 10px; }
 .dataControl button:disabled { cursor: not-allowed; opacity: 0.35; }
 .dataControl button.confirming { border-color: #ee8067; color: #ffcec3; background: rgb(232 93 63 / 0.12); }
+.dataButtons { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
 
 .principles {
   display: grid;
@@ -516,6 +536,7 @@ footer a { color: var(--foreground); border-bottom: 1px solid var(--line); }
   .principles { gap: 54px; }
   .dashboard { padding: 76px 16px; }
   .dashboardHeading { align-items: flex-start; flex-direction: column; gap: 20px; }
+  .syncSummary { max-width: none; }
   .dashboardGrid { grid-template-columns: 1fr; }
   .previewPanel { border-top: 1px solid rgb(255 255 255 / 0.16); border-left: 0; }
   .progressGrid { grid-template-columns: 1fr; }

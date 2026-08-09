@@ -1,7 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { IDBFactory } from "fake-indexeddb";
-import { clearSessions, createSessionId, listSessions, saveSession } from "../lib/session-store.mjs";
+import {
+  clearSessions,
+  createSessionId,
+  listSessions,
+  putSessionRecord,
+  replaceSessions,
+  saveSession,
+} from "../lib/session-store.mjs";
 import { validReview } from "./fixtures/valid-review.mjs";
 
 test("creates stable-format sortable session IDs", () => {
@@ -53,4 +60,29 @@ test("clears all local sessions only when explicitly called", async () => {
 
   await clearSessions({ indexedDB });
   assert.deepEqual(await listSessions({ indexedDB }), []);
+});
+
+test("caches validated cloud records without changing their identity", async () => {
+  const indexedDB = new IDBFactory();
+  const record = {
+    id: "server-session-id",
+    importedAt: "2026-08-09T08:00:00.000Z",
+    review: validReview,
+  };
+
+  await putSessionRecord(record, { indexedDB });
+  assert.deepEqual(await listSessions({ indexedDB }), [record]);
+});
+
+test("atomically replaces the local cache with validated records", async () => {
+  const indexedDB = new IDBFactory();
+  await saveSession(validReview, { indexedDB, now: 1000, randomBytes: new Uint8Array(10) });
+  const replacement = {
+    id: "cloud-record",
+    importedAt: "2026-08-09T09:00:00.000Z",
+    review: { ...validReview, topicEn: "Checking into a hotel" },
+  };
+
+  await replaceSessions([replacement], { indexedDB });
+  assert.deepEqual(await listSessions({ indexedDB }), [replacement]);
 });

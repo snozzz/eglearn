@@ -1,6 +1,11 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  deleteCloudSessions,
+  fetchCloudSessions,
+  saveCloudReview,
+} from "@/lib/cloud-client.mjs";
 import { buildProgress } from "@/lib/progress.mjs";
 import {
   buildObsidianNewUri,
@@ -8,7 +13,14 @@ import {
   sessionMarkdownFilename,
 } from "@/lib/obsidian-export.mjs";
 import { parseReviewText } from "@/lib/review-contract.mjs";
-import { clearSessions, listSessions, saveSession } from "@/lib/session-store.mjs";
+import {
+  clearSessions,
+  listSessions,
+  putSessionRecord,
+  replaceSessions,
+  saveSession,
+} from "@/lib/session-store.mjs";
+import { mergeSessions } from "@/lib/session-sync.mjs";
 
 type ReviewScore = {
   status: "assessed" | "unassessed";
@@ -169,6 +181,35 @@ export function ReviewDashboard() {
   const [exportNotice, setExportNotice] = useState("");
   const [manualMarkdown, setManualMarkdown] = useState("");
   const [confirmClear, setConfirmClear] = useState(false);
+  const [cloudState, setCloudState] = useState<"checking" | "synced" | "local" | "error">("checking");
+  const [cloudNotice, setCloudNotice] = useState("正在连接私人云端记录…");
+  const [syncing, setSyncing] = useState(false);
+
+  const refreshFromCloud = useCallback(async (quiet = false) => {
+    if (!quiet) {
+      setCloudState("checking");
+      setCloudNotice("正在同步私人云端记录…");
+    }
+
+    try {
+      const cloudSessions = await fetchCloudSessions() as StoredSession[];
+      for (const record of cloudSessions) await putSessionRecord(record);
+      setSessions((current) => mergeSessions(current, cloudSessions) as StoredSession[]);
+      setCloudState("synced");
+      setCloudNotice("私人云端已同步；本机保留离线缓存。");
+      return cloudSessions;
+    } catch (error) {
+      setCloudState("local");
+      if (!quiet) {
+        setCloudNotice(
+          error instanceof Error
+            ? `${error.message} 当前仍可使用本机记录。`
+            : "云同步暂不可用，当前仍可使用本机记录。",
+        );
+      }
+      return null;
+    }
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -180,10 +221,25 @@ export function ReviewDashboard() {
         if (active) setErrors([error.message]);
       })
       .finally(() => {
-        if (active) setLoading(false);
+        if (active) {
+          setLoading(false);
+          void refreshFromCloud();
+        }
       });
     return () => { active = false; };
-  }, []);
+  }, [refreshFromCloud]);
+
+  useEffect(() => {
+    function refreshWhenVisible() {
+      if (document.visibilityState === "visible") void refreshFromCloud(true);
+    }
+    document.addEventListener("visibilitychange", refreshWhenVisible);
+    window.addEventListener("focus", refreshWhenVisible);
+    return () => {
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
+      window.removeEventListener("focus", refreshWhenVisible);
+    };
+  }, [refreshFromCloud]);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -257,16 +313,50 @@ export function ReviewDashboard() {
   async function handleClearSessions() {
     if (!confirmClear) {
       setConfirmClear(true);
-      setExportNotice("此操作会永久删除当前浏览器里的全部练习记录。请再次点击确认。");
+      setExportNotice("此操作会永久删除私人云端记录和当前浏览器缓存。请再次点击确认。");
       return;
+    }
+    const failures: string[] = [];
+    try {
+      await deleteCloudSessions();
+    } catch {
+      failures.push("云端记录未删除");
     }
     try {
       await clearSessions();
       setSessions([]);
       setConfirmClear(false);
-      setExportNotice("当前浏览器里的练习记录已全部删除，无法恢复。");
+    } catch {
+      failures.push("本机缓存未删除");
+    }
+    setExportNotice(
+      failures.length === 0
+        ? "云端记录和本机缓存已全部删除，无法恢复。"
+        : `删除未完全成功：${failures.join("；")}。请稍后重试。`,
+    );
+  }
+
+  async function syncAllSessions() {
+    if (sessions.length === 0 || syncing) return;
+    setSyncing(true);
+    setCloudNotice("正在把现有本机记录同步到私人云端…");
+    try {
+      const synced: StoredSession[] = [];
+      for (const session of sessions) {
+        const result = await saveCloudReview(session.review);
+        synced.push(result.session as StoredSession);
+        await putSessionRecord(result.session);
+      }
+      const merged = mergeSessions(sessions, synced) as StoredSession[];
+      await replaceSessions(merged);
+      setSessions(merged);
+      setCloudState("synced");
+      setCloudNotice("现有记录已同步；重复内容不会重复创建。");
     } catch (error) {
-      setExportNotice(error instanceof Error ? error.message : "无法清空本地记录。" );
+      setCloudState("error");
+      setCloudNotice(error instanceof Error ? error.message : "现有记录暂时无法同步。");
+    } finally {
+      setSyncing(false);
     }
   }
 
@@ -295,11 +385,23 @@ export function ReviewDashboard() {
     setSaving(true);
     setErrors([]);
     try {
-      const record = await saveSession(pendingReview) as StoredSession;
-      setSessions((current) => [record, ...current]);
+      let record: StoredSession;
+      try {
+        const result = await saveCloudReview(pendingReview);
+        record = result.session as StoredSession;
+        await putSessionRecord(record);
+        setCloudState("synced");
+        setCloudNotice("私人云端已同步；本机保留离线缓存。");
+        setNotice(result.status === "saved" ? "已保存并同步。" : "这份复盘已经保存过，没有重复创建。");
+      } catch {
+        record = await saveSession(pendingReview) as StoredSession;
+        setCloudState("local");
+        setCloudNotice("云同步暂不可用；这次复盘只保存在当前浏览器。");
+        setNotice("已保存到当前浏览器；稍后可再次同步到云端。");
+      }
+      setSessions((current) => mergeSessions([record], current) as StoredSession[]);
       setPendingReview(null);
       setRawReview("");
-      setNotice("已保存到当前浏览器。没有上传到服务器。");
     } catch (error) {
       setErrors([error instanceof Error ? error.message : "保存失败，请重试。"]);
     } finally {
@@ -311,15 +413,24 @@ export function ReviewDashboard() {
     <section className="dashboard" id="dashboard" aria-labelledby="dashboard-title">
       <div className="dashboardHeading">
         <div>
-          <span className="sectionKicker">Local-first dashboard</span>
+          <span className="sectionKicker">Private sync dashboard</span>
           <h2 id="dashboard-title">把这次练习留下来</h2>
         </div>
-        <p>复盘只存当前浏览器的 IndexedDB。无需登录，不会发送到我们的服务器。</p>
+        <div className="syncSummary">
+          <p>Action 自动保存到你的私人记录；当前浏览器同时保留一份离线缓存。</p>
+          <div className={`syncBadge ${cloudState}`} role="status">
+            <i aria-hidden="true" />
+            <span>{cloudNotice}</span>
+            <button type="button" onClick={() => void refreshFromCloud()} disabled={cloudState === "checking"}>
+              刷新
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="dashboardGrid">
         <form className="importPanel" onSubmit={validate}>
-          <div className="panelLabel"><span>01</span> 粘贴 GPT 复盘</div>
+          <div className="panelLabel"><span>01</span> 手工备用导入</div>
           <label htmlFor="review-json">JSON 代码块</label>
           <textarea
             id="review-json"
@@ -328,7 +439,7 @@ export function ReviewDashboard() {
             placeholder={'```json\n{\n  "schemaVersion": "1.0",\n  ...\n}\n```'}
             spellCheck={false}
           />
-          <p className="inputHint">只接受 v1.0 契约。代码块外有多余文字、评分越界或未知字段都会被拒绝。</p>
+          <p className="inputHint">正常情况下用“复盘并保存”自动同步。Action 失败时，仍可在这里粘贴 v1.0 JSON。</p>
           <button className="primaryButton formButton" type="submit">检查复盘</button>
 
           {errors.length > 0 && (
@@ -362,7 +473,7 @@ export function ReviewDashboard() {
                 </div>
               )}
               <button className="primaryButton formButton" type="button" onClick={confirmSave} disabled={saving}>
-                {saving ? "正在保存…" : "确认保存到本机"}
+                {saving ? "正在保存…" : "确认保存并同步"}
               </button>
             </div>
           )}
@@ -378,7 +489,7 @@ export function ReviewDashboard() {
         {loading ? (
           <p className="historyEmpty">正在读取本地记录…</p>
         ) : sessions.length === 0 ? (
-          <p className="historyEmpty">还没有记录。完成一次 ChatGPT 语音练习后，把复盘粘贴到上方。</p>
+          <p className="historyEmpty">还没有记录。完成语音练习、退出 Voice 后发送“复盘并保存”。</p>
         ) : (
           <div className="sessionList">
             {sessions.map((session) => (
@@ -438,10 +549,15 @@ export function ReviewDashboard() {
           <label className="manualCopy">手动复制 Markdown<textarea readOnly value={manualMarkdown} onFocus={(event) => event.currentTarget.select()} /></label>
         )}
         <div className="dataControl">
-          <div><strong>本机数据控制</strong><p>删除只影响当前浏览器，不会删除已经下载或写入 Obsidian 的 Markdown。</p></div>
-          <button className={confirmClear ? "confirming" : ""} type="button" onClick={handleClearSessions} disabled={sessions.length === 0}>
-            {confirmClear ? "再次点击，永久删除" : "清空本机记录"}
-          </button>
+          <div><strong>记录与缓存</strong><p>同步会上传结构化复盘，不上传原始音频；删除仍不会影响已经导出的 Markdown。</p></div>
+          <div className="dataButtons">
+            <button type="button" onClick={syncAllSessions} disabled={sessions.length === 0 || syncing}>
+              {syncing ? "正在同步…" : "同步现有记录"}
+            </button>
+            <button className={confirmClear ? "confirming" : ""} type="button" onClick={handleClearSessions} disabled={sessions.length === 0}>
+              {confirmClear ? "再次点击，永久删除" : "删除全部记录"}
+            </button>
+          </div>
         </div>
       </div>
     </section>

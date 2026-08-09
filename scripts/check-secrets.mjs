@@ -33,7 +33,8 @@ const patterns = [
   },
 ];
 
-const secretAssignment = /\b(OPENAI_API_KEY|API_KEY|ACCESS_TOKEN|AUTH_TOKEN|CLIENT_SECRET|PRIVATE_KEY|SECRET_KEY)\s*[:=]\s*["']?([^\s"',;]+)/gi;
+const secretAssignment = /\b([A-Z][A-Z0-9_]*(?:_API_KEY|_SECRET|_TOKEN)|API_KEY|ACCESS_TOKEN|AUTH_TOKEN|CLIENT_SECRET|PRIVATE_KEY|SECRET_KEY)\s*[:=]\s*["']?([^\s"',;]+)/gi;
+const sitesAuthorization = /OAI-Sites-Authorization\s*[:=]\s*(?:Bearer\s+)?[A-Za-z0-9._~-]{32,}/gi;
 const placeholders = /^(?:example|placeholder|changeme|your[-_]|dummy|test(?:ing)?|unset|not[-_]?set|<[^>]+>)/i;
 const sensitiveName = /(?:^|\/)(?:id_rsa|id_ed25519|credentials|service-account)(?:\.|$)/i;
 const findings = [];
@@ -50,6 +51,11 @@ for (const file of files) {
   for (const { label, expression } of patterns) {
     expression.lastIndex = 0;
     if (expression.test(content)) findings.push(`${file}: ${label}`);
+  }
+
+  sitesAuthorization.lastIndex = 0;
+  if (sitesAuthorization.test(content)) {
+    findings.push(`${file}: Sites authorization token`);
   }
 
   secretAssignment.lastIndex = 0;

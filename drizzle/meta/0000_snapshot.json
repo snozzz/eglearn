@@ -1,0 +1,102 @@
+{
+  "version": "6",
+  "dialect": "sqlite",
+  "id": "3ee9c6b9-37b0-4c5f-9f9d-a427b3af39a2",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "tables": {
+    "speaking_sessions": {
+      "name": "speaking_sessions",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "owner_scope": {
+          "name": "owner_scope",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "imported_at": {
+          "name": "imported_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "schema_version": {
+          "name": "schema_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "idempotency_key": {
+          "name": "idempotency_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "content_hash": {
+          "name": "content_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "review_json": {
+          "name": "review_json",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "idx_speaking_sessions_owner_idempotency": {
+          "name": "idx_speaking_sessions_owner_idempotency",
+          "columns": [
+            "owner_scope",
+            "idempotency_key"
+          ],
+          "isUnique": true
+        },
+        "idx_speaking_sessions_owner_hash": {
+          "name": "idx_speaking_sessions_owner_hash",
+          "columns": [
+            "owner_scope",
+            "content_hash"
+          ],
+          "isUnique": true
+        },
+        "idx_speaking_sessions_owner_imported": {
+          "name": "idx_speaking_sessions_owner_imported",
+          "columns": [
+            "owner_scope",
+            "imported_at"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    }
+  },
+  "views": {},
+  "enums": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "indexes": {}
+  }
+}

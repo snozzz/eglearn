@@ -6,7 +6,7 @@
 - A modern browser for the EGLearn dashboard.
 - Obsidian only if you want Markdown notes in a vault.
 
-You do not need an OpenAI API account, API key, microphone permission for the dashboard, backend account, or Obsidian plugin.
+You do not need an OpenAI API account, OpenAI API key, microphone permission for the dashboard, separate backend account, or Obsidian plugin.
 
 ## One-time Custom GPT setup
 
@@ -14,9 +14,10 @@ You do not need an OpenAI API account, API key, microphone permission for the da
 2. Name the GPT `EGLearn 口语教练`.
 3. Copy all of `gpt/INSTRUCTIONS.md` into the GPT Instructions field.
 4. Upload `gpt/KNOWLEDGE.md` as a knowledge file.
-5. Enable Voice conversations. Do not add an Action for the MVP.
-6. Add the conversation starters from `gpt/README.md`.
-7. Keep the GPT private and run the cases in `gpt/EVALS.md` before sharing it.
+5. Enable Voice conversations.
+6. Import `gpt/ACTION_OPENAPI.yaml` as an Action and follow `gpt/ACTION_SETUP.md` exactly. Put the private Sites bearer value only in GPT Builder authentication.
+7. Add the conversation starters from `gpt/README.md`.
+8. Keep the GPT private and run the cases in `gpt/EVALS.md`. Do not share this personal credential with other users.
 
 ## Each practice
 
@@ -24,9 +25,11 @@ You do not need an OpenAI API account, API key, microphone permission for the da
 2. Wait for the `Practice started — <topic>` marker, then switch to voice.
 3. Practice. The coach should keep its turns short and avoid interrupting minor errors.
 4. Exit voice mode but stay in the same chat.
-5. Type `生成复盘`.
-6. Copy the single JSON code block into the dashboard and choose **检查复盘**.
-7. Read the original/rewrite preview. If it matches your chat, choose **确认保存到本机**.
+5. Type `复盘并保存`.
+6. Approve the Action if ChatGPT asks. Wait for `saved` or `already_saved` and open the returned dashboard link.
+7. The record appears in history and is cached in this browser. Returning to the dashboard automatically refreshes the private cloud history.
+
+If automatic save fails, type `生成复盘`, copy the single JSON block into **手工备用导入**, validate it, and choose **确认保存并同步**. If the network is unavailable, the review remains in the local cache and can be synchronized later.
 
 The dashboard performs structural validation. It cannot independently prove that a quote is verbatim because the transcript is not separately imported.
 
@@ -54,9 +57,13 @@ The shortcut never appends to or overwrites an existing note.
 
 ## Troubleshooting
 
+- **Action is unavailable during voice:** this is expected. Exit Voice mode, stay in the same chat, then type `复盘并保存`.
+- **Action reports authentication failure:** keep the GPT private and replace the Sites identity-bypass bearer value in GPT Builder; never paste it into chat or Git.
+- **Action reports a temporary failure:** it may retry once with the same idempotency key. If no success is confirmed, use the JSON fallback.
+- **Dashboard says local-only:** sign in to the private Site and choose **刷新** or **同步现有记录**.
 - **GPT adds prose around JSON:** repeat `只返回一个 JSON 代码块` or check the current GPT instructions.
 - **Dashboard rejects a review:** fix the listed field or regenerate the review with the v1.0 knowledge file.
 - **Clipboard is blocked:** use the manual-copy box or download Markdown.
 - **Obsidian does not open:** confirm Obsidian is installed and the Vault/folder values match this device; use download instead.
-- **History disappeared:** IndexedDB belongs to the current browser profile and may be removed by clearing site data. Download important Markdown notes.
+- **History disappeared:** confirm you are signed in to the private Site, then refresh cloud history. Unsynced local-only records can still be lost by clearing browser data.
 - **Second practice includes the first:** make sure the GPT emitted a new `Practice started` marker before entering voice.

@@ -16,10 +16,10 @@ Private MVP: [eglearn-speaking.hd701108.chatgpt.site](https://eglearn-speaking.h
 1. Start the EGLearn Custom GPT in ChatGPT and switch to voice mode.
 2. Speak for roughly 8–10 minutes around one realistic scenario.
 3. Exit voice mode while staying in the same conversation.
-4. Type `生成复盘` and copy the structured result into the EGLearn dashboard.
-5. Revisit recurring issues; export selected sessions to Obsidian when useful.
+4. Type `复盘并保存`; the private GPT Action validates and stores the structured review.
+5. Open the dashboard link, revisit recurring issues, and export selected sessions to Obsidian when useful.
 
-Voice mode cannot invoke Custom GPT Actions, Apps, MCP servers, or plugins. The first release therefore uses a deliberate text-after-voice import step. See [architecture](docs/ARCHITECTURE.md).
+Voice mode cannot invoke Custom GPT Actions, Apps, MCP servers, or plugins. The Action therefore runs only after Voice mode ends. `生成复盘` plus the manual JSON importer remains the no-loss fallback. See [architecture](docs/ARCHITECTURE.md).
 
 ## Development
 
@@ -45,10 +45,11 @@ See the [user guide](docs/USER_GUIDE.md), [privacy statement](PRIVACY.md), and [
 ## Repository map
 
 - `app/` — local-first review importer and history dashboard
-- `db/` — durable practice data schema
-- `gpt/` — Custom GPT instructions and knowledge files
+- `db/` — private D1 practice records and idempotent persistence
+- `gpt/` — Custom GPT instructions, Action schema, setup guide, and evals
 - `lib/review-contract.mjs` — strict review parser and semantic guardrails
 - `lib/session-store.mjs` — validated IndexedDB persistence and sortable session IDs
+- `lib/session-sync.mjs` — review hashing, cloud/local validation, and deduplication
 - `lib/progress.mjs` — controlled recurrence, score-history, and reappearance aggregation
 - `lib/obsidian-export.mjs` — safe YAML/Markdown rendering and optional Obsidian URI creation
 - `docs/ARCHITECTURE.md` — product and technical decisions

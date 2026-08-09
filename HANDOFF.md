@@ -1,6 +1,6 @@
 # EGLearn handoff
 
-Last updated: 2026-08-06 (Asia/Shanghai)
+Last updated: 2026-08-09 (Asia/Shanghai)
 
 ## User intent
 
@@ -18,7 +18,8 @@ Hard requirements:
 - A Custom GPT in ChatGPT Plus is the voice practice surface.
 - Voice mode cannot call Actions, Apps, MCP servers, or plugins.
 - The user exits voice, stays in the same chat, and requests the structured review in text.
-- MVP persistence is copy/import into the web app; an Action can be added later for post-voice auto-save.
+- Post-voice persistence uses one private GPT Action; copy/import remains the failure fallback.
+- Structured reviews are stored in Sites D1 and cached in browser IndexedDB.
 - Obsidian is optional, initially one-way Markdown export.
 
 See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
@@ -33,6 +34,7 @@ See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
 | 3. Trends and retry comparison | Complete | `module-3-progress` tag | Recurrence statuses, 1–5 band history, latest reappearance comparison |
 | 4. Obsidian export | Complete | `module-4-obsidian-export` tag | Typed YAML, stable Markdown, download/copy, optional clipboard URI |
 | 5. Privacy and end-to-end validation | Complete | `module-5-mvp` tag | Privacy/data controls, CI, user guide, acceptance checklist, private hosting config |
+| 6. Plus + GPT Action sync | Complete in source | `module-6-plus-action` tag | Private Action write endpoint, D1, idempotency, cloud/local merge, generated OpenAPI, GPT v1.1 instructions |
 
 ## Current implementation
 
@@ -47,13 +49,17 @@ See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
 - Module 3 aggregates only controlled rule IDs across distinct sessions, excludes `OTHER`, charts assessed 1–5 bands without percentages, and compares the latest two appearances without claiming mastery.
 - Module 4 renders safe Obsidian Markdown with typed YAML, a managed-region hash and stable filenames; the UI supports download/copy plus a non-destructive `obsidian://new` clipboard shortcut and manual-copy fallback.
 - Module 5 adds two-step local-data deletion, keyboard focus styles, user/privacy/acceptance documentation, GitHub CI, and a private Sites project configuration.
+- Module 6 binds Sites D1, stores normalized review JSON with server IDs/timestamps, uses owner-scoped idempotency keys, and exposes only `POST /api/actions/reviews` to the GPT.
+- Browser history requires the authenticated Sites user, merges cloud records with an IndexedDB offline cache, refreshes when the dashboard regains focus, and keeps manual JSON import as fallback.
+- `gpt/ACTION_OPENAPI.yaml` is generated from the same Zod contract. `复盘并保存` calls the Action only after Voice ends; `生成复盘` remains Action-free.
+- The personal Site and GPT must remain private. The Sites identity-bypass bearer value belongs only in Sites/GPT Builder configuration and never in this repository.
 
 ## Current release
 
 - Private MVP: `https://eglearn-speaking.hd701108.chatgpt.site`
 - Deployed source commit: `046c34c0b90b90609c639d6e06097970f712db7d`
 - GitHub `main` may be one documentation-only commit ahead after recording this URL; application code is identical.
-- All 33 automated tests, lint, production build, and secret scan passed before deployment.
+- The Module 6 source passes 48 automated contract, Action, sync, UI, and storage tests plus lint, production build, and secret scan. Record the deployment commit after publishing.
 
 ## Commands
 
@@ -67,12 +73,13 @@ npm run check
 
 ## Next concrete task
 
-No required implementation task remains for MVP v1. The next product-validation step is user-owned: create the private Custom GPT from `gpt/INSTRUCTIONS.md` + `gpt/KNOWLEDGE.md`, run all cases in `gpt/EVALS.md`, then complete two real practices and inspect the dashboard/Obsidian flow before considering a post-voice OAuth Action.
+Publish Module 6 so Sites provisions/applies the D1 migration, then update the private Custom GPT from `gpt/INSTRUCTIONS.md` + `gpt/KNOWLEDGE.md`, import `gpt/ACTION_OPENAPI.yaml`, configure the private custom-header credential outside Git, and run all cases in `gpt/EVALS.md`. Complete one real post-voice `复盘并保存` before treating the external GPT configuration as accepted.
 
 ## Open risks
 
 - Post-voice transcripts are not guaranteed to be verbatim; corrections must remain conservative.
 - Text cannot support pronunciation scoring and may not support fluency scoring without timing evidence.
-- A GPT Action requires OAuth for safe multi-user storage and cannot run inside voice, so it is deferred until the copy/import workflow is validated.
-- Browser IndexedDB is device/profile-local and can be cleared by browser settings; important sessions should be exported to Markdown.
+- The private Action credential is single-owner. Publishing or sharing the GPT requires per-user OAuth and owner-isolated rows first.
+- Actions still cannot run inside Voice mode; the learner must exit Voice and send the save command in text.
+- Unsynced IndexedDB fallback records remain device/profile-local and can be cleared by browser settings.
 - Browser automation could not claim the localhost preview because the browser URL policy blocked local control. Production builds, server-render tests, live HTTP content checks, and pure IndexedDB tests provide the current automated evidence; manual visual acceptance remains in `docs/ACCEPTANCE.md`.

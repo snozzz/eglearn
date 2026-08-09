@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { ReviewDashboard } from "./review-dashboard";
 
 export const metadata: Metadata = {
-  title: "产品骨架",
-  description: "EGLearn 的无 API 口语练习与复盘工作流。",
+  title: "英语口语练习记录",
+  description: "用 ChatGPT Plus 练口语，并把复盘自动同步到 EGLearn。",
 };
 
 export default function Home() {
@@ -14,15 +14,15 @@ export default function Home() {
           <span className="brandMark" aria-hidden="true">e</span>
           <span>EGLearn</span>
         </a>
-        <span className="buildBadge">MVP · v1.0</span>
+        <span className="buildBadge">Plus + Action · v1.1</span>
       </nav>
 
       <section className="hero" id="top">
         <div className="eyebrow">Speak · Notice · Improve</div>
         <h1>每次开口，<br />都留下进步的证据。</h1>
         <p className="heroCopy">
-          在 ChatGPT Plus 里练口语，结束后把关键纠错、好表达与下一次任务
-          沉淀到一个简单的成长面板。无需 OpenAI API，也无需额外购买模型额度。
+          在 ChatGPT Plus 里练口语，退出 Voice 后让 Action 自动保存关键纠错、
+          好表达与下一次任务。无需 OpenAI API，也无需额外购买模型额度。
         </p>
         <div className="heroActions">
           <a className="primaryButton" href="#workflow">看看怎么工作</a>
@@ -45,14 +45,14 @@ export default function Home() {
           <li className="stepCard">
             <span className="stepNumber">02</span>
             <div className="stepIcon" aria-hidden="true">✦</div>
-            <h3>退出语音后复盘</h3>
-            <p>回到同一聊天发送“生成复盘”，得到有原句证据的重点反馈，而不是一堆泛泛建议。</p>
+            <h3>退出语音后保存</h3>
+            <p>回到同一聊天发送“复盘并保存”，GPT 生成有原句证据的反馈并调用私人 Action。</p>
           </li>
           <li className="stepCard">
             <span className="stepNumber">03</span>
             <div className="stepIcon" aria-hidden="true">↗</div>
-            <h3>导入并看见变化</h3>
-            <p>首版复制复盘到面板，追踪反复问题；需要时再导出 Markdown 到 Obsidian。</p>
+            <h3>自动同步并复习</h3>
+            <p>复盘自动出现在面板，重复调用不会产生副本；需要时再导出 Markdown 到 Obsidian。</p>
           </li>
         </ol>
       </section>
