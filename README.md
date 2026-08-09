@@ -13,13 +13,14 @@ Private MVP: [eglearn-speaking.hd701108.chatgpt.site](https://eglearn-speaking.h
 
 ## Intended flow
 
-1. Start the EGLearn Custom GPT in ChatGPT and switch to voice mode.
-2. Speak for roughly 8–10 minutes around one realistic scenario.
-3. Exit voice mode while staying in the same conversation.
-4. Type `复盘并保存`; the private GPT Action validates and stores the structured review.
-5. Open the dashboard link, revisit recurring issues, and export selected sessions to Obsidian when useful.
+1. In the ChatGPT desktop app, choose ordinary **Chat** and open a new, empty chat.
+2. Select **Start new voice chat before sending any message**, then read the short starter shown on the EGLearn dashboard.
+3. Speak for roughly 8–10 minutes around one realistic scenario and end Voice.
+4. Copy EGLearn's complete review prompt into the same Chat; Chat returns one validated-format JSON block.
+5. Copy the JSON, return to EGLearn, choose **从剪贴板读取并检查**, review the evidence, and confirm the save.
+6. Revisit recurring issues and export selected sessions to Obsidian when useful.
 
-Voice mode cannot invoke Custom GPT Actions, Apps, MCP servers, or plugins. The Action therefore runs only after Voice mode ends. `生成复盘` plus the manual JSON importer remains the no-loss fallback. See [architecture](docs/ARCHITECTURE.md).
+Starting from an empty chat in Voice mode is what activates GPT-Live. The full review contract is intentionally pasted only after Voice ends, because sending a text bootstrap first would start the chat in text/dictation mode. The default workflow uses no Work mode, plugin, GPT Action, or OpenAI API. See [architecture](docs/ARCHITECTURE.md).
 
 ## Development
 
@@ -44,9 +45,10 @@ See the [user guide](docs/USER_GUIDE.md), [privacy statement](PRIVACY.md), and [
 
 ## Repository map
 
-- `app/` — local-first review importer and history dashboard
+- `app/` — GPT-Live launcher, review importer, and history dashboard
 - `db/` — private D1 practice records and idempotent persistence
-- `gpt/` — Custom GPT instructions, Action schema, setup guide, and evals
+- `lib/chat-live-prompts.mjs` — spoken Voice marker and complete post-Voice review prompt
+- `gpt/` — retained optional private Custom GPT/Action configuration; not the default path
 - `lib/review-contract.mjs` — strict review parser and semantic guardrails
 - `lib/session-store.mjs` — validated IndexedDB persistence and sortable session IDs
 - `lib/session-sync.mjs` — review hashing, cloud/local validation, and deduplication

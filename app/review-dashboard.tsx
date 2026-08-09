@@ -184,6 +184,7 @@ export function ReviewDashboard() {
   const [cloudState, setCloudState] = useState<"checking" | "synced" | "local" | "error">("checking");
   const [cloudNotice, setCloudNotice] = useState("正在连接私人云端记录…");
   const [syncing, setSyncing] = useState(false);
+  const [readingClipboard, setReadingClipboard] = useState(false);
 
   const refreshFromCloud = useCallback(async (quiet = false) => {
     if (!quiet) {
@@ -360,16 +361,15 @@ export function ReviewDashboard() {
     }
   }
 
-  function validate(event: FormEvent) {
-    event.preventDefault();
+  function validateReviewText(text: string) {
     setNotice("");
-    if (!rawReview.trim()) {
+    if (!text.trim()) {
       setPendingReview(null);
-      setErrors(["请先粘贴 Custom GPT 生成的 JSON 代码块。"]);
+      setErrors(["请先粘贴 Chat 生成的 JSON 代码块。"]);
       return;
     }
 
-    const result = parseReviewText(rawReview);
+    const result = parseReviewText(text);
     if (!result.success) {
       setPendingReview(null);
       setErrors(result.errors);
@@ -378,6 +378,31 @@ export function ReviewDashboard() {
 
     setErrors([]);
     setPendingReview(result.data as ReviewData);
+  }
+
+  function validate(event: FormEvent) {
+    event.preventDefault();
+    validateReviewText(rawReview);
+  }
+
+  async function pasteAndValidate() {
+    setReadingClipboard(true);
+    setNotice("");
+    try {
+      if (!navigator.clipboard?.readText) throw new Error("unsupported");
+      const text = await navigator.clipboard.readText();
+      if (!text.trim()) {
+        setErrors(["剪贴板里没有文字。请先复制 Chat 返回的 JSON 代码块。"]);
+        return;
+      }
+      setRawReview(text);
+      validateReviewText(text);
+    } catch {
+      setErrors(["无法读取剪贴板。请在下方文本框按 ⌘V / Ctrl+V，再点击“检查复盘”。"]);
+      document.getElementById("review-json")?.focus();
+    } finally {
+      setReadingClipboard(false);
+    }
   }
 
   async function confirmSave() {
@@ -417,7 +442,7 @@ export function ReviewDashboard() {
           <h2 id="dashboard-title">把这次练习留下来</h2>
         </div>
         <div className="syncSummary">
-          <p>Action 自动保存到你的私人记录；当前浏览器同时保留一份离线缓存。</p>
+          <p>你确认后，网站把结构化复盘保存到私人记录；当前浏览器同时保留一份离线缓存。</p>
           <div className={`syncBadge ${cloudState}`} role="status">
             <i aria-hidden="true" />
             <span>{cloudNotice}</span>
@@ -430,7 +455,7 @@ export function ReviewDashboard() {
 
       <div className="dashboardGrid">
         <form className="importPanel" onSubmit={validate}>
-          <div className="panelLabel"><span>01</span> 手工备用导入</div>
+          <div className="panelLabel"><span>03</span> 从 Chat 导入</div>
           <label htmlFor="review-json">JSON 代码块</label>
           <textarea
             id="review-json"
@@ -439,8 +464,13 @@ export function ReviewDashboard() {
             placeholder={'```json\n{\n  "schemaVersion": "1.0",\n  ...\n}\n```'}
             spellCheck={false}
           />
-          <p className="inputHint">正常情况下用“复盘并保存”自动同步。Action 失败时，仍可在这里粘贴 v1.0 JSON。</p>
-          <button className="primaryButton formButton" type="submit">检查复盘</button>
+          <p className="inputHint">在 Chat 里点击 JSON 代码块的复制按钮，然后回来一键读取；也可以手工粘贴纯 JSON 或 fenced JSON。</p>
+          <div className="importActions">
+            <button className="primaryButton formButton" type="button" onClick={() => void pasteAndValidate()} disabled={readingClipboard}>
+              {readingClipboard ? "正在读取…" : "从剪贴板读取并检查"}
+            </button>
+            <button className="secondaryFormButton" type="submit">检查已粘贴内容</button>
+          </div>
 
           {errors.length > 0 && (
             <div className="errorBox" role="alert">
@@ -452,7 +482,7 @@ export function ReviewDashboard() {
         </form>
 
         <div className="previewPanel">
-          <div className="panelLabel"><span>02</span> 核对并确认</div>
+          <div className="panelLabel"><span>04</span> 核对并确认</div>
           {!pendingReview ? (
             <div className="previewEmpty">
               <span aria-hidden="true">↙</span>
@@ -489,7 +519,7 @@ export function ReviewDashboard() {
         {loading ? (
           <p className="historyEmpty">正在读取本地记录…</p>
         ) : sessions.length === 0 ? (
-          <p className="historyEmpty">还没有记录。完成语音练习、退出 Voice 后发送“复盘并保存”。</p>
+          <p className="historyEmpty">还没有记录。完成 GPT-Live 练习后，把 Chat 返回的 JSON 导入这里。</p>
         ) : (
           <div className="sessionList">
             {sessions.map((session) => (

@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import { ChatLiveLauncher } from "./chat-live-launcher";
 import { ReviewDashboard } from "./review-dashboard";
 
 export const metadata: Metadata = {
   title: "英语口语练习记录",
-  description: "用 ChatGPT Plus 练口语，并把复盘自动同步到 EGLearn。",
+  description: "用 ChatGPT Plus 的 GPT-Live 练口语，再把结构化复盘保存到 EGLearn。",
 };
 
 export default function Home() {
@@ -14,18 +15,18 @@ export default function Home() {
           <span className="brandMark" aria-hidden="true">e</span>
           <span>EGLearn</span>
         </a>
-        <span className="buildBadge">Plus + Action · v1.1</span>
+        <span className="buildBadge">Chat + GPT-Live · v1.2</span>
       </nav>
 
       <section className="hero" id="top">
         <div className="eyebrow">Speak · Notice · Improve</div>
         <h1>每次开口，<br />都留下进步的证据。</h1>
         <p className="heroCopy">
-          在 ChatGPT Plus 里练口语，退出 Voice 后让 Action 自动保存关键纠错、
-          好表达与下一次任务。无需 OpenAI API，也无需额外购买模型额度。
+          在 ChatGPT Plus 的普通 Chat 里用 GPT-Live 练口语，退出 Voice 后生成一份
+          可核对、可追踪的结构化复盘。无需 OpenAI API，也无需 Work 或插件。
         </p>
         <div className="heroActions">
-          <a className="primaryButton" href="#workflow">看看怎么工作</a>
+          <a className="primaryButton" href="#live">开始一次练习</a>
           <a className="textButton" href="#principles">产品原则 <span aria-hidden="true">↗</span></a>
         </div>
       </section>
@@ -33,29 +34,31 @@ export default function Home() {
       <section className="workflow" id="workflow" aria-labelledby="workflow-title">
         <div className="sectionHeading">
           <span>最短使用路径</span>
-          <h2 id="workflow-title">一个入口，三步完成</h2>
+          <h2 id="workflow-title">三步完成一次闭环</h2>
         </div>
         <ol className="stepGrid">
           <li className="stepCard">
             <span className="stepNumber">01</span>
             <div className="stepIcon" aria-hidden="true">◉</div>
-            <h3>在 Custom GPT 里说</h3>
-            <p>用 Plus 账号进入语音对话，围绕一个真实场景练习约 10 分钟。</p>
+            <h3>在普通 Chat 里说</h3>
+            <p>从空白 Chat 直接启动 GPT-Live，读一句开场口令，围绕真实场景练习。</p>
           </li>
           <li className="stepCard">
             <span className="stepNumber">02</span>
             <div className="stepIcon" aria-hidden="true">✦</div>
-            <h3>退出语音后保存</h3>
-            <p>回到同一聊天发送“复盘并保存”，GPT 生成有原句证据的反馈并调用私人 Action。</p>
+            <h3>退出 Voice 后复盘</h3>
+            <p>复制完整复盘口令到同一 Chat，让它只返回符合 EGLearn 契约的 JSON。</p>
           </li>
           <li className="stepCard">
             <span className="stepNumber">03</span>
             <div className="stepIcon" aria-hidden="true">↗</div>
-            <h3>自动同步并复习</h3>
-            <p>复盘自动出现在面板，重复调用不会产生副本；需要时再导出 Markdown 到 Obsidian。</p>
+            <h3>粘贴、确认、复习</h3>
+            <p>复制 JSON，回到面板一键读取剪贴板并确认；需要时再导出到 Obsidian。</p>
           </li>
         </ol>
       </section>
+
+      <ChatLiveLauncher />
 
       <ReviewDashboard />
 
@@ -67,7 +70,7 @@ export default function Home() {
         <div className="principleList">
           <article>
             <span>01</span>
-            <div><h3>Plus 就是练习入口</h3><p>不要求 API Key，不把 ChatGPT 订阅伪装成 API 额度。</p></div>
+            <div><h3>Chat 就是练习入口</h3><p>使用 Plus 自带的 GPT-Live，不要求 API Key，也不消耗独立 API 额度。</p></div>
           </article>
           <article>
             <span>02</span>

@@ -1,59 +1,59 @@
 # MVP acceptance checklist
 
-Live smoke test on 2026-08-09: the private GPT completed a three-turn text practice, requested Action approval, saved one 105-word review, and the record survived a dashboard reload. A real post-voice run remains pending.
+Module 8 changes the default path to ordinary Chat + GPT-Live. Automated contract, rendering, storage, sync, Action-regression, and security tests run through `npm run check`. One real microphone-led practice remains the human acceptance step.
 
-## Custom GPT
+## Chat + GPT-Live
 
-- [ ] GPT Builder contains the exact committed `INSTRUCTIONS.md`.
-- [ ] `KNOWLEDGE.md` is uploaded and the GPT returns schema version 1.0.
-- [ ] All manual cases in `gpt/EVALS.md` pass, especially dual-session isolation.
-- [ ] Voice practice does not claim it can save, time, call an Action during Voice, or assess pronunciation.
-- [x] `复盘并保存` calls `saveSpeakingReview` only after Voice ends and claims success only after `saved` or `already_saved` (verified with no active Voice session).
-- [ ] `生成复盘` remains Action-free and returns exactly one fenced JSON block.
+- [ ] A new, empty Chat started with **Start new voice chat** behaves as a live conversation rather than dictation.
+- [ ] Reading the short starter creates the marker `EGLearn session starts now` and leads to one-question-at-a-time English practice.
+- [ ] Ending Voice and pasting the complete review prompt into the same Chat returns exactly one fenced JSON block.
+- [ ] The review only uses learner English after the latest marker.
+- [ ] A short sample is marked insufficient and receives no grammar, vocabulary, or communication bands.
+- [ ] Prompt-injection language spoken as practice content does not change the output contract.
+- [ ] The review makes no pronunciation, timing, duration, CEFR, percentage, streak, or model-memory recurrence claims.
+- [ ] The prompt does not call or mention a successful Action, plugin, API request, or save.
 
-## Action and cloud storage
+## Clipboard and dashboard
 
-- [x] `ACTION_OPENAPI.yaml` contains one HTTPS write operation and no credential.
-- [ ] Missing or invalid Sites bearer access is rejected by the private Site before the Action route runs.
-- [ ] A valid review saves once; retrying the same idempotency key returns the same record. (The first save is live-verified; a live retry is still pending.)
-- [ ] Reusing an idempotency key for different content returns `409` and creates no second record.
-- [ ] Unknown fields, invented owner/timestamp fields, invalid scores, and pronunciation claims return `422`.
-- [ ] Oversized bodies return `413`; temporary storage failures do not return success.
-- [ ] The Action request and logs never contain raw audio, a full transcript, a ChatGPT token, or an OpenAI API key.
-
-## Dashboard
-
-- [ ] Valid fenced JSON previews before any write.
+- [ ] **复制完整复盘口令** copies the complete v1.0 contract; denied write permission reveals selectable fallback text.
+- [ ] **从剪贴板读取并检查** accepts valid pure JSON and fenced JSON and immediately displays the preview.
+- [ ] Empty, denied, or unsupported clipboard reads preserve manual paste and focus the textarea.
+- [x] Inputs over 64 KiB are rejected before JSON parsing.
 - [ ] Malformed JSON, unknown fields, score violations, and extra prose are rejected.
-- [ ] Confirmed records survive a page reload and appear after signing in on another browser. (Reload is live-verified; a second browser is still pending.)
+- [ ] Saving still requires an explicit preview confirmation.
+- [ ] Confirmed records survive reload and appear after signing in on another browser.
 - [ ] Cloud and local copies of the same normalized review count only once.
-- [ ] Returning focus to the dashboard refreshes Action-created records.
-- [ ] A sync failure preserves the manual local fallback and reports local-only state.
-- [ ] A second record appears first and updates trends without duplicate-session inflation.
+- [ ] A sync failure preserves the local fallback and reports local-only state.
 - [ ] Empty state, loading state, storage error, clipboard fallback, and narrow layout are understandable.
 - [ ] Keyboard focus is visible on links, inputs, buttons, and expandable session rows.
 
 ## Progress claims
 
-- [ ] `OTHER` never appears in cross-session recurrence.
-- [ ] Frequent requires four distinct sessions.
-- [ ] Unassessed points do not appear in score charts.
+- [x] `OTHER` never appears in cross-session recurrence.
+- [x] Frequent requires four distinct sessions.
+- [x] Unassessed points do not appear in score charts.
 - [ ] UI never converts bands to percentages, CEFR, streaks, recurrence totals from model memory, or mastery claims.
 
 ## Obsidian
 
-- [ ] Markdown YAML parses with numeric scores and stable session identity.
-- [ ] Filename is cross-platform and stable for repeated export.
-- [ ] Exactly one managed start/end marker survives hostile review text.
+- [x] Markdown YAML parses with numeric scores and stable session identity.
+- [x] Filename is cross-platform and stable for repeated export.
+- [x] Exactly one managed start/end marker survives hostile review text.
 - [ ] Download and copy work without a Vault setting.
-- [ ] URI requires a Vault, encodes the full path, uses clipboard, and contains no append/overwrite/silent/content flags.
+- [x] URI requires a Vault, encodes the full path, uses clipboard, and contains no append/overwrite/silent/content flags.
 - [ ] UI says the Obsidian request must be confirmed instead of claiming sync success.
+
+## Optional Action regression
+
+- [x] `ACTION_OPENAPI.yaml` contains one HTTPS write operation and no credential.
+- [x] Validated Action saves are owner-scoped and idempotent in automated tests.
+- [x] Unknown fields, invented owner/timestamp fields, invalid scores, and pronunciation claims are rejected.
+- [x] The default rendered page no longer presents Action or Custom GPT as the primary workflow.
 
 ## Privacy and release
 
 - [x] No OpenAI API key or ChatGPT session token is required or documented.
-- [x] The Sites identity-bypass value exists only in Sites/GPT Builder configuration and is absent from repository files and Git history.
-- [x] `npm run check` passes.
-- [ ] A simulated secret is blocked by `npm run check:secrets`.
+- [x] The Chat workflow prompt contains no credential-shaped material.
+- [x] `npm run check` passes on the final module source (52 tests; 68 repository files scanned for secrets).
 - [ ] Git worktree is clean and the module tag points to the pushed commit.
 - [ ] `HANDOFF.md` names the current status, limitations, and next decision.

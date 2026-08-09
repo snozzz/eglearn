@@ -23,10 +23,15 @@ test("server-renders the EGLearn product shell", async () => {
   assert.match(html, /每次开口/);
   assert.match(html, /ChatGPT Plus/);
   assert.match(html, /无需 OpenAI API/);
+  assert.match(html, /Chat \+ GPT-Live/);
+  assert.match(html, /先开 Voice，再开始练/);
+  assert.match(html, /复制完整复盘口令/);
   assert.match(html, /Obsidian 是可选出口/);
   assert.match(html, /把这次练习留下来/);
-  assert.match(html, /Action 自动保存到你的私人记录/);
-  assert.match(html, /手工备用导入/);
+  assert.match(html, /从剪贴板读取并检查/);
+  assert.match(html, /从 Chat 导入/);
+  assert.doesNotMatch(html, /Action 自动保存到你的私人记录/);
+  assert.doesNotMatch(html, /在 Custom GPT 里说/);
   assert.match(html, /从记录里看趋势/);
   assert.match(html, /没有练习机会，不判断“已掌握”/);
   assert.match(html, /Obsidian 设置/);

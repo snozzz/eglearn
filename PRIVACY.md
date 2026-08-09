@@ -1,17 +1,17 @@
 # Privacy
 
-EGLearn uses a private Sites database for automatic post-voice review sync and keeps an IndexedDB cache in the current browser.
+EGLearn uses a private Sites database for user-confirmed structured review storage and keeps an IndexedDB cache in the current browser.
 
 ## Data locations
 
 - Voice and chat content stay in the user's ChatGPT account and are governed by the user's ChatGPT settings and OpenAI terms.
-- The GPT Action sends only the structured v1.0 review after the user exits Voice mode and explicitly asks to save it. It does not send raw audio or a separate full transcript.
-- Accepted reviews are stored in the private EGLearn Sites D1 database and cached in IndexedDB in the current browser profile.
-- Manual imports are sent to the same private database when sync is available; otherwise they remain in the local cache until the user retries synchronization.
+- In the default Chat + GPT-Live path, the user explicitly copies the post-Voice structured review from Chat and pastes or reads it from the clipboard in EGLearn. EGLearn cannot read the ChatGPT conversation automatically.
+- Only after the user previews and confirms the structured review does the dashboard send it to the private EGLearn Sites D1 database and cache it in IndexedDB in the current browser profile.
+- The dashboard does not upload raw audio or a separate full transcript. If cloud sync is unavailable, the review remains in the local cache until the user retries synchronization.
 - Obsidian Vault name and target folder are stored in browser local storage on the current device.
 - Downloaded or copied Markdown is controlled by the user and may be moved into an Obsidian vault.
 
-The dashboard does not request an OpenAI API key, reuse a ChatGPT session token, send analytics, load advertising trackers, or read an Obsidian vault.
+The dashboard does not request an OpenAI API key, reuse a ChatGPT session token, call a ChatGPT plugin or Action in the default path, send analytics, load advertising trackers, or read an Obsidian vault.
 
 ## Important limits
 
@@ -24,6 +24,6 @@ The dashboard does not request an OpenAI API key, reuse a ChatGPT session token,
 
 ## Credentials
 
-No OpenAI credential is required. The private Action uses a Sites identity-bypass value stored only in Sites and GPT Builder; it is not an OpenAI API key and must be treated like a password. Local environment files, common private-key formats, and credential files are excluded from Git. Every repository push runs `npm run check:secrets`; CI repeats the full security and test suite.
+No OpenAI credential is required. Chat + GPT-Live uses the learner's existing Plus session, while the browser dashboard uses the private Site's own signed-in session. Neither value is copied into EGLearn source or prompts. Local environment files, common private-key formats, and credential files are excluded from Git. Every repository push runs `npm run check:secrets`; CI repeats the full security and test suite.
 
-The personal Action credential represents one private owner. Do not share or publish the configured GPT. A multi-user release must replace the shared credential with per-user OAuth and user-isolated storage.
+The repository retains an older optional private Custom GPT + Action path. Its existing Sites identity-bypass value remains a password-like single-owner credential stored only in Sites/GPT Builder. It is not involved in the default Chat + GPT-Live flow and the configured GPT must not be shared while that credential remains active.

@@ -33,6 +33,12 @@ test("rejects malformed JSON with a useful import error", () => {
   assert.match(result.errors[0], /不是有效 JSON/);
 });
 
+test("rejects an oversized clipboard payload", () => {
+  const result = parseReviewText("x".repeat(65_537));
+  assert.equal(result.success, false);
+  assert.match(result.errors[0], /64 KiB/);
+});
+
 test("rejects prose outside the single JSON block", () => {
   const result = parseReviewText(`Here is your review:\n\`\`\`json\n${JSON.stringify(validReview)}\n\`\`\``);
   assert.equal(result.success, false);

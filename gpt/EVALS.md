@@ -1,5 +1,7 @@
 # EGLearn Custom GPT manual evals v1.1
 
+These evals cover the optional legacy Custom GPT + Action path. The default Chat + GPT-Live acceptance flow is maintained in `docs/ACCEPTANCE.md`.
+
 Run these in GPT Builder preview before publishing an instruction update. Inspect behavior and validate every emitted JSON block with `parseReviewText` or the Module 2 import screen.
 
 ## 1. Clean short sample

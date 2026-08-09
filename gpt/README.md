@@ -1,4 +1,8 @@
-# EGLearn Custom GPT configuration
+# EGLearn optional Custom GPT configuration
+
+The default Module 8 workflow now uses ordinary Chat + GPT-Live and the prompts exported by `lib/chat-live-prompts.mjs`. Nothing in this directory is required for that path.
+
+This directory is retained for the previously deployed private Custom GPT + Action compatibility path. Keep it private while its single-owner credential remains configured.
 
 This directory contains the versioned configuration for the EGLearn speaking coach in ChatGPT.
 

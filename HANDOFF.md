@@ -15,12 +15,14 @@ Hard requirements:
 
 ## Architecture decision
 
-- A Custom GPT in ChatGPT Plus is the voice practice surface.
-- Voice mode cannot call Actions, Apps, MCP servers, or plugins.
-- The user exits voice, stays in the same chat, and requests the structured review in text.
-- Post-voice persistence uses one private GPT Action; copy/import remains the failure fallback.
+- Ordinary Chat in the ChatGPT desktop app is the default voice surface because it provides GPT-Live.
+- A new practice must begin as an empty Chat with **Start new voice chat** selected before any text is sent; text-first chats offer dictation instead.
+- After Voice starts, the learner reads the short `EGLearn session starts now` marker and coaching instruction shown by the Site.
+- The user exits Voice, stays in the same Chat, pastes the complete self-contained v1.0 review prompt, and copies the returned JSON.
+- The dashboard explicitly reads or accepts that copied JSON, validates it, previews evidence, and saves only after user confirmation.
 - Structured reviews are stored in Sites D1 and cached in browser IndexedDB.
 - Obsidian is optional, initially one-way Markdown export.
+- The private Custom GPT + Action remains deployed as an optional compatibility path, but is no longer the recommended speaking flow.
 
 See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
 
@@ -36,6 +38,7 @@ See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
 | 5. Privacy and end-to-end validation | Complete | `module-5-mvp` tag | Privacy/data controls, CI, user guide, acceptance checklist, private hosting config |
 | 6. Plus + GPT Action sync | Complete and deployed | `module-6-plus-action` tag | Private Action write endpoint, D1, idempotency, cloud/local merge, generated OpenAPI, GPT v1.1 instructions |
 | 7. Private Custom GPT launch | Complete | `module-7-private-gpt` tag | Only-me GPT, encrypted custom-header credential, live Action save, dashboard reload verification |
+| 8. Chat + GPT-Live clipboard loop | Complete in source; release pending | `module-8-chat-gpt-live` target tag | Voice-first launcher, full post-Voice prompt, one-click clipboard import, 64 KiB limit, primary-flow docs |
 
 ## Current implementation
 
@@ -57,11 +60,15 @@ See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
 - Module 7 created the private `EGLearn 口语教练` Custom GPT and configured its Action with API-key authentication, custom header `OAI-Sites-Authorization`, and an encrypted Sites bypass value.
 - A three-turn text practice (105 learner words) completed the real ChatGPT Action consent flow and saved one review. Reloading the private dashboard showed the cloud record `Free conversation about an English-learning project`.
 - The live smoke test intentionally did not start Voice. One real post-voice practice remains the final human acceptance check because Voice itself cannot be automated without microphone access and the Action cannot run until Voice ends.
+- Module 8 changes the primary path to ordinary Chat + GPT-Live. `lib/chat-live-prompts.mjs` derives the complete review prompt from the controlled rule IDs and exact no-assessment reasons used by the Zod contract.
+- `app/chat-live-launcher.tsx` enforces the voice-first ordering in product copy, exposes the short spoken marker, and copies the long post-Voice prompt with a manual fallback.
+- The dashboard now treats copied JSON import as the primary flow. An explicit clipboard-read click validates immediately; denied permission falls back to the textarea. Inputs over 64 KiB are rejected.
+- Module 8 does not delete or reconfigure the existing private GPT, Action route, D1 data, or Sites bypass credential. That path remains optional and must stay private.
 
 ## Current release
 
 - Private MVP: `https://eglearn-speaking.hd701108.chatgpt.site`
-- Private Custom GPT: `https://chatgpt.com/g/g-6a78065a98848191843ca75c4f0d7c36-eglearn-kou-yu-jiao-lian`
+- Optional private Custom GPT: `https://chatgpt.com/g/g-6a78065a98848191843ca75c4f0d7c36-eglearn-kou-yu-jiao-lian`
 - Site deployment: version 2 from commit `a8567fbb6d62bd846dcad72528e3f8ae5f47d718`
 - Site access: owner-only custom access, zero allowed groups, zero external visitors.
 - GPT visibility: `Only me`. Do not change it while the shared personal Action credential is configured.
@@ -81,13 +88,14 @@ npm run check
 
 ## Next concrete task
 
-Open the private Custom GPT, complete one real 8–10 minute Voice practice, exit Voice in the same chat, type `复盘并保存`, approve the Action, and confirm the second record appears on the dashboard. Then run the remaining adversarial and failure cases in `gpt/EVALS.md`, especially dual-session isolation, insufficient samples, Action denial, and idempotent retry.
+In the ChatGPT desktop app, open a new empty **Chat**, choose **Start new voice chat** before sending any text, read the Site's starter, and complete one real 8–10 minute practice. End Voice, copy the Site's complete review prompt into the same Chat, copy the JSON result, and use **从剪贴板读取并检查** on the dashboard. Confirm the record survives a reload. Then run the short-sample, dual-session, prompt-injection, and clipboard-denial cases in `docs/ACCEPTANCE.md`.
 
 ## Open risks
 
 - Post-voice transcripts are not guaranteed to be verbatim; corrections must remain conservative.
 - Text cannot support pronunciation scoring and may not support fluency scoring without timing evidence.
 - The private Action credential is single-owner. Publishing or sharing the GPT requires per-user OAuth and owner-isolated rows first.
-- Actions still cannot run inside Voice mode; the learner must exit Voice and send the save command in text.
+- Ordinary Chat has no EGLearn plugin or Action context, so the full post-Voice review prompt must be pasted every practice. A short command alone is not reliable.
+- Starting the Chat with a text bootstrap defeats the intended GPT-Live entry path; the short coaching instruction must be spoken after Voice starts.
 - Unsynced IndexedDB fallback records remain device/profile-local and can be cleared by browser settings.
 - Browser automation could not claim the localhost preview because the browser URL policy blocked local control. Production builds, server-render tests, live HTTP content checks, and pure IndexedDB tests provide the current automated evidence; manual visual acceptance remains in `docs/ACCEPTANCE.md`.
