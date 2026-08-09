@@ -21,13 +21,15 @@ You do not need an OpenAI API account, OpenAI API key, microphone permission for
 
 ## Each practice
 
-1. Open the EGLearn Custom GPT in text and say `开始一次 10 分钟英语口语练习` or supply your own scenario.
+1. Open the private [EGLearn 口语教练](https://chatgpt.com/g/g-6a78065a98848191843ca75c4f0d7c36-eglearn-kou-yu-jiao-lian) in ChatGPT and say `开始一次 10 分钟英语口语练习` or supply your own scenario.
 2. Wait for the `Practice started — <topic>` marker, then switch to voice.
 3. Practice. The coach should keep its turns short and avoid interrupting minor errors.
 4. Exit voice mode but stay in the same chat.
 5. Type `复盘并保存`.
 6. Approve the Action if ChatGPT asks. Wait for `saved` or `already_saved` and open the returned dashboard link.
 7. The record appears in history and is cached in this browser. Returning to the dashboard automatically refreshes the private cloud history.
+
+The configured GPT is personal and must remain **Only me**. The link does not grant another account access and must not be republished with the current single-owner Action credential.
 
 If automatic save fails, type `生成复盘`, copy the single JSON block into **手工备用导入**, validate it, and choose **确认保存并同步**. If the network is unavailable, the review remains in the local cache and can be synchronized later.
 

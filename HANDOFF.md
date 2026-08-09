@@ -34,7 +34,8 @@ See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
 | 3. Trends and retry comparison | Complete | `module-3-progress` tag | Recurrence statuses, 1–5 band history, latest reappearance comparison |
 | 4. Obsidian export | Complete | `module-4-obsidian-export` tag | Typed YAML, stable Markdown, download/copy, optional clipboard URI |
 | 5. Privacy and end-to-end validation | Complete | `module-5-mvp` tag | Privacy/data controls, CI, user guide, acceptance checklist, private hosting config |
-| 6. Plus + GPT Action sync | Complete in source | `module-6-plus-action` tag | Private Action write endpoint, D1, idempotency, cloud/local merge, generated OpenAPI, GPT v1.1 instructions |
+| 6. Plus + GPT Action sync | Complete and deployed | `module-6-plus-action` tag | Private Action write endpoint, D1, idempotency, cloud/local merge, generated OpenAPI, GPT v1.1 instructions |
+| 7. Private Custom GPT launch | Complete | `module-7-private-gpt` tag | Only-me GPT, encrypted custom-header credential, live Action save, dashboard reload verification |
 
 ## Current implementation
 
@@ -53,13 +54,20 @@ See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
 - Browser history requires the authenticated Sites user, merges cloud records with an IndexedDB offline cache, refreshes when the dashboard regains focus, and keeps manual JSON import as fallback.
 - `gpt/ACTION_OPENAPI.yaml` is generated from the same Zod contract. `复盘并保存` calls the Action only after Voice ends; `生成复盘` remains Action-free.
 - The personal Site and GPT must remain private. The Sites identity-bypass bearer value belongs only in Sites/GPT Builder configuration and never in this repository.
+- Module 7 created the private `EGLearn 口语教练` Custom GPT and configured its Action with API-key authentication, custom header `OAI-Sites-Authorization`, and an encrypted Sites bypass value.
+- A three-turn text practice (105 learner words) completed the real ChatGPT Action consent flow and saved one review. Reloading the private dashboard showed the cloud record `Free conversation about an English-learning project`.
+- The live smoke test intentionally did not start Voice. One real post-voice practice remains the final human acceptance check because Voice itself cannot be automated without microphone access and the Action cannot run until Voice ends.
 
 ## Current release
 
 - Private MVP: `https://eglearn-speaking.hd701108.chatgpt.site`
-- Deployed source commit: `046c34c0b90b90609c639d6e06097970f712db7d`
-- GitHub `main` may be one documentation-only commit ahead after recording this URL; application code is identical.
-- The Module 6 source passes 48 automated contract, Action, sync, UI, and storage tests plus lint, production build, and secret scan. Record the deployment commit after publishing.
+- Private Custom GPT: `https://chatgpt.com/g/g-6a78065a98848191843ca75c4f0d7c36-eglearn-kou-yu-jiao-lian`
+- Site deployment: version 2 from commit `a8567fbb6d62bd846dcad72528e3f8ae5f47d718`
+- Site access: owner-only custom access, zero allowed groups, zero external visitors.
+- GPT visibility: `Only me`. Do not change it while the shared personal Action credential is configured.
+- The Sites bypass value was rotated during Module 7 setup. The current value is stored only by Sites and GPT Builder and is intentionally absent from this handoff and Git.
+- The Module 6 source passes 48 automated contract, Action, sync, UI, and storage tests plus lint, production build, and secret scan.
+- The dashboard currently contains one synthetic acceptance record created by the live Action smoke test. It is clearly about the EGLearn project and may be removed with **删除全部记录** before real usage if the learner wants an empty history.
 
 ## Commands
 
@@ -73,7 +81,7 @@ npm run check
 
 ## Next concrete task
 
-Publish Module 6 so Sites provisions/applies the D1 migration, then update the private Custom GPT from `gpt/INSTRUCTIONS.md` + `gpt/KNOWLEDGE.md`, import `gpt/ACTION_OPENAPI.yaml`, configure the private custom-header credential outside Git, and run all cases in `gpt/EVALS.md`. Complete one real post-voice `复盘并保存` before treating the external GPT configuration as accepted.
+Open the private Custom GPT, complete one real 8–10 minute Voice practice, exit Voice in the same chat, type `复盘并保存`, approve the Action, and confirm the second record appears on the dashboard. Then run the remaining adversarial and failure cases in `gpt/EVALS.md`, especially dual-session isolation, insufficient samples, Action denial, and idempotent retry.
 
 ## Open risks
 

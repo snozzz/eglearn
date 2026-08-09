@@ -1,19 +1,21 @@
 # MVP acceptance checklist
 
+Live smoke test on 2026-08-09: the private GPT completed a three-turn text practice, requested Action approval, saved one 105-word review, and the record survived a dashboard reload. A real post-voice run remains pending.
+
 ## Custom GPT
 
 - [ ] GPT Builder contains the exact committed `INSTRUCTIONS.md`.
 - [ ] `KNOWLEDGE.md` is uploaded and the GPT returns schema version 1.0.
 - [ ] All manual cases in `gpt/EVALS.md` pass, especially dual-session isolation.
 - [ ] Voice practice does not claim it can save, time, call an Action during Voice, or assess pronunciation.
-- [ ] `复盘并保存` calls `saveSpeakingReview` only after Voice ends and claims success only after `saved` or `already_saved`.
+- [x] `复盘并保存` calls `saveSpeakingReview` only after Voice ends and claims success only after `saved` or `already_saved` (verified with no active Voice session).
 - [ ] `生成复盘` remains Action-free and returns exactly one fenced JSON block.
 
 ## Action and cloud storage
 
-- [ ] `ACTION_OPENAPI.yaml` contains one HTTPS write operation and no credential.
+- [x] `ACTION_OPENAPI.yaml` contains one HTTPS write operation and no credential.
 - [ ] Missing or invalid Sites bearer access is rejected by the private Site before the Action route runs.
-- [ ] A valid review saves once; retrying the same idempotency key returns the same record.
+- [ ] A valid review saves once; retrying the same idempotency key returns the same record. (The first save is live-verified; a live retry is still pending.)
 - [ ] Reusing an idempotency key for different content returns `409` and creates no second record.
 - [ ] Unknown fields, invented owner/timestamp fields, invalid scores, and pronunciation claims return `422`.
 - [ ] Oversized bodies return `413`; temporary storage failures do not return success.
@@ -23,7 +25,7 @@
 
 - [ ] Valid fenced JSON previews before any write.
 - [ ] Malformed JSON, unknown fields, score violations, and extra prose are rejected.
-- [ ] Confirmed records survive a page reload and appear after signing in on another browser.
+- [ ] Confirmed records survive a page reload and appear after signing in on another browser. (Reload is live-verified; a second browser is still pending.)
 - [ ] Cloud and local copies of the same normalized review count only once.
 - [ ] Returning focus to the dashboard refreshes Action-created records.
 - [ ] A sync failure preserves the manual local fallback and reports local-only state.
@@ -49,9 +51,9 @@
 
 ## Privacy and release
 
-- [ ] No OpenAI API key or ChatGPT session token is required or documented.
-- [ ] The Sites identity-bypass value exists only in Sites/GPT Builder configuration and is absent from repository files and Git history.
-- [ ] `npm run check` passes.
+- [x] No OpenAI API key or ChatGPT session token is required or documented.
+- [x] The Sites identity-bypass value exists only in Sites/GPT Builder configuration and is absent from repository files and Git history.
+- [x] `npm run check` passes.
 - [ ] A simulated secret is blocked by `npm run check:secrets`.
 - [ ] Git worktree is clean and the module tag points to the pushed commit.
 - [ ] `HANDOFF.md` names the current status, limitations, and next decision.
