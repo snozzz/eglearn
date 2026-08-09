@@ -55,5 +55,5 @@ Module 8 changes the default path to ordinary Chat + GPT-Live. Automated contrac
 - [x] No OpenAI API key or ChatGPT session token is required or documented.
 - [x] The Chat workflow prompt contains no credential-shaped material.
 - [x] `npm run check` passes on the final module source (52 tests; 68 repository files scanned for secrets).
-- [ ] Git worktree is clean and the module tag points to the pushed commit.
-- [ ] `HANDOFF.md` names the current status, limitations, and next decision.
+- [x] Module source commit `7282200` and tag `module-8-chat-gpt-live` are pushed; the final deployment handoff follows as a documentation-only commit.
+- [x] `HANDOFF.md` names the current status, limitations, and next decision.

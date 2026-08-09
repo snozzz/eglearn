@@ -38,7 +38,7 @@ See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
 | 5. Privacy and end-to-end validation | Complete | `module-5-mvp` tag | Privacy/data controls, CI, user guide, acceptance checklist, private hosting config |
 | 6. Plus + GPT Action sync | Complete and deployed | `module-6-plus-action` tag | Private Action write endpoint, D1, idempotency, cloud/local merge, generated OpenAPI, GPT v1.1 instructions |
 | 7. Private Custom GPT launch | Complete | `module-7-private-gpt` tag | Only-me GPT, encrypted custom-header credential, live Action save, dashboard reload verification |
-| 8. Chat + GPT-Live clipboard loop | Complete in source; release pending | `module-8-chat-gpt-live` target tag | Voice-first launcher, full post-Voice prompt, one-click clipboard import, 64 KiB limit, primary-flow docs |
+| 8. Chat + GPT-Live clipboard loop | Complete and deployed | `7282200` / `module-8-chat-gpt-live` | Voice-first launcher, full post-Voice prompt, one-click clipboard import, 64 KiB limit, primary-flow docs |
 
 ## Current implementation
 
@@ -69,11 +69,12 @@ See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
 
 - Private MVP: `https://eglearn-speaking.hd701108.chatgpt.site`
 - Optional private Custom GPT: `https://chatgpt.com/g/g-6a78065a98848191843ca75c4f0d7c36-eglearn-kou-yu-jiao-lian`
-- Site deployment: version 2 from commit `a8567fbb6d62bd846dcad72528e3f8ae5f47d718`
+- Site deployment: version 3 from commit `72822008bbdf175d9bce4033367b58b4b6f914ea`
 - Site access: owner-only custom access, zero allowed groups, zero external visitors.
 - GPT visibility: `Only me`. Do not change it while the shared personal Action credential is configured.
 - The Sites bypass value was rotated during Module 7 setup. The current value is stored only by Sites and GPT Builder and is intentionally absent from this handoff and Git.
 - The Module 6 source passes 48 automated contract, Action, sync, UI, and storage tests plus lint, production build, and secret scan.
+- The Module 8 source passes 52 automated Chat-prompt, contract, Action-regression, sync, UI, and storage tests. The final secret scan checked 68 repository files before both GitHub and Sites source pushes.
 - The dashboard currently contains one synthetic acceptance record created by the live Action smoke test. It is clearly about the EGLearn project and may be removed with **删除全部记录** before real usage if the learner wants an empty history.
 
 ## Commands
