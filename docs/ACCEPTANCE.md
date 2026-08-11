@@ -60,5 +60,5 @@ Module 9 deepens the ordinary Chat + GPT-Live path. Automated contract, renderin
 - [x] No OpenAI API key or ChatGPT session token is required or documented.
 - [x] The Chat workflow prompt contains no credential-shaped material.
 - [x] `npm run check` passes on the final module source (56 tests; 68 repository files scanned for secrets).
-- [ ] Module 9 source and deployment commit/tag are pushed; the final deployment handoff records the live version.
+- [x] Module 9 source and deployment commit/tag are pushed; the final deployment handoff records live Site version 4.
 - [x] `HANDOFF.md` names the current status, limitations, and next decision.
