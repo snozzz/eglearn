@@ -16,7 +16,7 @@ export function ChatLiveLauncher() {
       setNotice(
         target === "starter"
           ? "开场口令已复制。先启动 Voice，再照着读，不要提前发送文字。"
-          : "完整复盘口令已复制。把它粘贴到刚结束 Voice 的同一 Chat。",
+          : "深度复盘口令已复制。把它粘贴到刚结束 Voice 的同一 Chat。",
       );
     } catch {
       setFallback(text);
@@ -41,7 +41,7 @@ export function ChatLiveLauncher() {
         <article className="launcherCard">
           <span className="launcherNumber">01</span>
           <h3>对着 GPT-Live 读开场口令</h3>
-          <p>启动 Voice 后照着读即可。它会先问你想练的真实场景，并让你多开口。</p>
+          <p>启动 Voice 后照着读即可。它会先问你想练的真实场景，并让你多开口；听到高置信度发音问题时会短暂纠正并让你重说。</p>
           <blockquote>{voiceStarterSpoken}</blockquote>
           <button type="button" onClick={() => void copy(voiceStarterSpoken, "starter")}>复制开场口令</button>
           <small>复制是为了方便对照；不要在启动 Voice 之前把它发进 Chat。</small>
@@ -50,11 +50,11 @@ export function ChatLiveLauncher() {
         <article className="launcherCard accentCard">
           <span className="launcherNumber">02</span>
           <h3>结束 Voice 后复制完整复盘</h3>
-          <p>回到同一 Chat，粘贴这份完整契约。普通 Chat 不认识 EGLearn 格式，所以不能只说“帮我复盘”。</p>
-          <button className="launcherPrimary" type="button" onClick={() => void copy(reviewPrompt, "review")}>复制完整复盘口令</button>
+          <p>回到同一 Chat，粘贴这份深度复盘口令。它会覆盖完整练习、分段问题、可复用表达，以及 Voice 中确实直接听到的口语观察。</p>
+          <button className="launcherPrimary" type="button" onClick={() => void copy(reviewPrompt, "review")}>复制深度复盘口令</button>
           <details>
             <summary>查看复盘口令包含什么</summary>
-            <p>会话边界、完整 v1.0 JSON 字段、受控错误分类、样本阈值，以及不评估发音和流利度的诚实边界。</p>
+            <p>会话边界、完整 v1.1 JSON 字段、分段深度分析、受控错误分类，以及只有在 Voice 直接音频可核对时才记录发音和流利度。</p>
           </details>
         </article>
       </div>
@@ -69,4 +69,3 @@ export function ChatLiveLauncher() {
     </section>
   );
 }
-

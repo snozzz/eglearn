@@ -2,16 +2,26 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 import {
+  audioEvidenceUnavailableReasonZh,
   errorRuleIds,
   parseReviewText,
   reviewSchema,
+  reviewSchemaV11,
 } from "../lib/review-contract.mjs";
 import { validReview } from "./fixtures/valid-review.mjs";
+import { validReviewV11 } from "./fixtures/valid-review-v11.mjs";
 
 const clone = () => structuredClone(validReview);
 
 test("accepts a complete review with structurally valid quote fields", () => {
   assert.equal(reviewSchema.safeParse(validReview).success, true);
+});
+
+test("accepts a deep v1.1 review with direct Voice evidence", () => {
+  assert.equal(reviewSchemaV11.safeParse(validReviewV11).success, true);
+  const result = parseReviewText(`\`\`\`json\n${JSON.stringify(validReviewV11)}\n\`\`\``);
+  assert.equal(result.success, true);
+  assert.equal(result.data.schemaVersion, "1.1");
 });
 
 test("parses the fenced JSON emitted by the Custom GPT", () => {
@@ -48,6 +58,30 @@ test("rejects pronunciation assessment and extra fields", () => {
   const review = clone();
   review.pronunciation = { status: "assessed", band: 5, reasonZh: "听起来很好。" };
   assert.equal(reviewSchema.safeParse(review).success, false);
+});
+
+test("rejects oral claims when v1.1 has no audio evidence", () => {
+  const review = structuredClone(validReviewV11);
+  review.oralAnalysis.evidenceMode = "not_available";
+  review.oralAnalysis.pronunciation.status = "assessed";
+  review.pronunciation.status = "assessed";
+  review.pronunciation.reasonZh = "听起来很好。";
+  assert.equal(reviewSchemaV11.safeParse(review).success, false);
+});
+
+test("requires the explicit audio boundary for transcript-only v1.1 reviews", () => {
+  const review = structuredClone(validReviewV11);
+  review.oralAnalysis.evidenceMode = "not_available";
+  review.oralAnalysis.pronunciation.status = "unassessed";
+  review.oralAnalysis.pronunciation.observations = [];
+  review.oralAnalysis.fluency.status = "unassessed";
+  review.oralAnalysis.fluency.band = null;
+  review.oralAnalysis.fluency.signals = [];
+  review.scores.fluency = { status: "unassessed", band: null, basis: "none", rationaleZh: "没有可核对的音频证据，暂不评估。" };
+  review.pronunciation = { status: "unassessed", reasonZh: audioEvidenceUnavailableReasonZh };
+  assert.equal(reviewSchemaV11.safeParse(review).success, true);
+  review.pronunciation.reasonZh = "文字看起来很流利。";
+  assert.equal(reviewSchemaV11.safeParse(review).success, false);
 });
 
 test("rejects a fluency score without timing evidence", () => {

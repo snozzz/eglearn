@@ -426,6 +426,61 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .previewIssue span { color: #9fb0a5; font-size: 10px; text-transform: uppercase; }
 .previewIssue del { color: #bda8a1; font-size: 13px; }
 .previewIssue strong { color: #f5f0e7; font-size: 14px; }
+.previewMeta { margin: 14px 0 0 !important; color: #8ea095 !important; font-size: 10px !important; }
+
+.oralPanel, .segmentPanel, .issueSection { margin-top: 26px; padding: 22px; border: 1px solid rgb(255 255 255 / 0.12); border-radius: 5px; background: rgb(0 0 0 / 0.08); }
+.oralPanelHeading { display: flex; align-items: baseline; justify-content: space-between; gap: 18px; }
+.oralPanelHeading h5 { margin: 0; color: #d8dfda; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+.oralPanelHeading > span { color: #8ea095; font-size: 9px; }
+.oralPanel > p, .segmentPanel > p { margin: 12px 0 0; color: #b9c3ba; font-size: 12px; line-height: 1.65; }
+.oralAudio { border-color: rgb(125 190 143 / 0.35); }
+.oralUnavailable, .oralLegacy { border-left: 2px solid #ee8067; }
+.oralBoundary { margin-top: 14px; padding: 10px 12px; color: #f0c2b5; background: rgb(232 93 63 / 0.1); font-size: 11px; line-height: 1.5; }
+.oralPanel small { display: block; margin-top: 13px; color: #7f9588; font-size: 10px; line-height: 1.5; }
+.oralPanelCompact { margin-top: 18px; padding: 15px; }
+.oralPanelCompact > p { margin-top: 8px; font-size: 11px; }
+.oralPanelCompact .oralPanelHeading h5 { font-size: 10px; }
+.oralCompactCue { display: flex; gap: 8px; align-items: baseline; margin-top: 10px; color: #dce2dd; font-size: 11px; }
+.oralCompactCue span { color: #9fb0a5; }
+.oralGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
+.oralCard { padding: 16px; border: 1px solid rgb(255 255 255 / 0.1); border-radius: 4px; background: rgb(255 255 255 / 0.025); }
+.oralCardHeading { display: flex; justify-content: space-between; gap: 12px; }
+.oralCardHeading strong { color: #e5e9e5; font-size: 12px; }
+.oralCardHeading span { color: #ee8067; font-size: 10px; }
+.oralCard p { margin: 10px 0 0; color: #aab8ae; font-size: 11px; line-height: 1.55; }
+.oralList { display: grid; gap: 11px; padding: 0; margin: 14px 0 0; list-style: none; }
+.oralList li { display: grid; gap: 4px; padding-top: 10px; border-top: 1px solid rgb(255 255 255 / 0.08); }
+.oralList li:first-child { padding-top: 0; border-top: 0; }
+.oralList strong { color: #e5e9e5; font-size: 11px; }
+.oralList span { color: #aab8ae; font-size: 11px; line-height: 1.5; }
+.oralList code { padding: 7px 8px; color: #c8e5d0; background: rgb(125 190 143 / 0.08); font-size: 10px; white-space: normal; }
+.oralList small { margin-top: 0; color: #7f9588; font-size: 9px; }
+.liveCorrections { margin-top: 18px; }
+.liveCorrections > strong { color: #d8dfda; font-size: 11px; }
+
+.segmentPanel { background: rgb(0 0 0 / 0.05); }
+.segmentGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 18px; }
+.segmentCard { padding: 16px; border: 1px solid rgb(255 255 255 / 0.1); border-radius: 4px; background: rgb(255 255 255 / 0.02); }
+.segmentCard > span { color: #ee8067; font-family: var(--font-geist-mono), monospace; font-size: 10px; }
+.segmentCard h6 { margin: 8px 0; color: #e5e9e5; font-size: 13px; font-weight: 600; }
+.segmentCard p { margin: 8px 0 0; color: #aab8ae; font-size: 11px; line-height: 1.55; }
+.segmentCard blockquote { margin: 13px 0; padding-left: 10px; border-left: 1px solid #ee8067; color: #d0d7d1; font-size: 11px; line-height: 1.5; }
+.segmentCard > strong { display: block; margin-top: 13px; color: #d8dfda; font-size: 11px; line-height: 1.5; }
+.segmentCard code { display: block; margin-top: 12px; padding: 8px; color: #c8e5d0; background: rgb(125 190 143 / 0.08); font-size: 10px; white-space: normal; }
+
+.issueSection { background: transparent; }
+.issueSection > .oralPanelHeading { margin-bottom: 16px; }
+.issueList { display: grid; gap: 12px; }
+.issueItem { padding: 16px; border: 1px solid rgb(255 255 255 / 0.1); border-radius: 4px; background: rgb(0 0 0 / 0.08); }
+.issueItemHeading { display: flex; align-items: center; gap: 8px; margin-bottom: 11px; }
+.issueItemHeading > span { color: #ee8067; font-family: var(--font-geist-mono), monospace; font-size: 10px; }
+.issueItemHeading > strong { color: #d8dfda; font-size: 11px; }
+.issueItemHeading em { margin-left: auto; color: #8ea095; font-size: 9px; font-style: normal; text-transform: uppercase; }
+.issueItem del { display: block; color: #bda8a1; font-size: 11px; line-height: 1.5; }
+.issueRewrite { display: block; margin-top: 4px; color: #f5f0e7; font-size: 12px; line-height: 1.5; }
+.issueItem p { margin: 11px 0; color: #aab8ae; font-size: 11px; line-height: 1.55; }
+.issueItem code { display: block; padding: 8px; color: #c8e5d0; background: rgb(125 190 143 / 0.08); font-size: 10px; white-space: normal; }
+.issueEmpty { margin: 0; color: #8ea095; font-size: 11px; }
 
 .historySection { margin-top: 84px; }
 
@@ -598,6 +653,7 @@ footer a { color: var(--foreground); border-bottom: 1px solid var(--line); }
   .comparisonGrid { grid-template-columns: 1fr; }
   .obsidianGrid { grid-template-columns: 1fr 1fr; }
   .obsidianNote { grid-column: 1 / -1; }
+  .oralGrid, .segmentGrid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 520px) {
@@ -612,6 +668,7 @@ footer a { color: var(--foreground); border-bottom: 1px solid var(--line); }
   .scoreCell:nth-child(-n + 2) { border-bottom: 1px solid rgb(255 255 255 / 0.14); }
   .sessionCard summary { grid-template-columns: 1fr; gap: 12px; }
   .detailColumns { grid-template-columns: 1fr; gap: 28px; }
+  .oralPanel, .segmentPanel, .issueSection { padding: 17px; }
   .progressStats { grid-template-columns: 1fr; }
   .trendRow { grid-template-columns: 80px 1fr 42px; gap: 10px; }
   .comparisonPanel > div:first-child { align-items: flex-start; flex-direction: column; gap: 8px; }

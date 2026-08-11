@@ -1,6 +1,6 @@
 # EGLearn handoff
 
-Last updated: 2026-08-09 (Asia/Shanghai)
+Last updated: 2026-08-11 (Asia/Shanghai)
 
 ## User intent
 
@@ -17,8 +17,8 @@ Hard requirements:
 
 - Ordinary Chat in the ChatGPT desktop app is the default voice surface because it provides GPT-Live.
 - A new practice must begin as an empty Chat with **Start new voice chat** selected before any text is sent; text-first chats offer dictation instead.
-- After Voice starts, the learner reads the short `EGLearn session starts now` marker and coaching instruction shown by the Site.
-- The user exits Voice, stays in the same Chat, pastes the complete self-contained v1.0 review prompt, and copies the returned JSON.
+- After Voice starts, the learner reads the short `EGLearn session starts now` marker and coaching instruction shown by the Site. The coach may make a few direct-audio pronunciation/flow checkpoints and ask for one repeat.
+- The user exits Voice, stays in the same Chat, pastes the complete self-contained v1.1 deep-review prompt, and copies the returned JSON.
 - The dashboard explicitly reads or accepts that copied JSON, validates it, previews evidence, and saves only after user confirmation.
 - Structured reviews are stored in Sites D1 and cached in browser IndexedDB.
 - Obsidian is optional, initially one-way Markdown export.
@@ -39,6 +39,7 @@ See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
 | 6. Plus + GPT Action sync | Complete and deployed | `module-6-plus-action` tag | Private Action write endpoint, D1, idempotency, cloud/local merge, generated OpenAPI, GPT v1.1 instructions |
 | 7. Private Custom GPT launch | Complete | `module-7-private-gpt` tag | Only-me GPT, encrypted custom-header credential, live Action save, dashboard reload verification |
 | 8. Chat + GPT-Live clipboard loop | Complete and deployed | `7282200` / `module-8-chat-gpt-live` | Voice-first launcher, full post-Voice prompt, one-click clipboard import, 64 KiB limit, primary-flow docs |
+| 9. Deep oral review | Source complete; release pending | next commit/tag | v1.1 deep review, multi-segment coverage, up to 12 issues, live pronunciation/fluency evidence boundary, richer dashboard and Obsidian export |
 
 ## Current implementation
 
@@ -64,17 +65,19 @@ See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
 - `app/chat-live-launcher.tsx` enforces the voice-first ordering in product copy, exposes the short spoken marker, and copies the long post-Voice prompt with a manual fallback.
 - The dashboard now treats copied JSON import as the primary flow. An explicit clipboard-read click validates immediately; denied permission falls back to the textarea. Inputs over 64 KiB are rejected.
 - Module 8 does not delete or reconfigure the existing private GPT, Action route, D1 data, or Sites bypass credential. That path remains optional and must stay private.
+- Module 9 keeps v1.0 records and the legacy Action path compatible while adding `reviewSchemaV11` for the default Chat flow. Transcript evidence now drives multi-segment deep review, while oral observations are accepted only when the same Voice context supplies direct audio evidence or an explicit checkpoint.
+- The dashboard now displays the full v1.1 issue list, segment drills, oral observations, live corrections, and an explicit “no audio evidence” boundary. Obsidian export includes the same sections.
 
 ## Current release
 
 - Private MVP: `https://eglearn-speaking.hd701108.chatgpt.site`
 - Optional private Custom GPT: `https://chatgpt.com/g/g-6a78065a98848191843ca75c4f0d7c36-eglearn-kou-yu-jiao-lian`
-- Site deployment: version 3 from commit `72822008bbdf175d9bce4033367b58b4b6f914ea`
+- Site deployment: version 3 from commit `72822008bbdf175d9bce4033367b58b4b6f914ea` (Module 9 deployment pending)
 - Site access: owner-only custom access, zero allowed groups, zero external visitors.
 - GPT visibility: `Only me`. Do not change it while the shared personal Action credential is configured.
 - The Sites bypass value was rotated during Module 7 setup. The current value is stored only by Sites and GPT Builder and is intentionally absent from this handoff and Git.
 - The Module 6 source passes 48 automated contract, Action, sync, UI, and storage tests plus lint, production build, and secret scan.
-- The Module 8 source passes 52 automated Chat-prompt, contract, Action-regression, sync, UI, and storage tests. The final secret scan checked 68 repository files before both GitHub and Sites source pushes.
+- The Module 8 source passes 52 automated Chat-prompt, contract, Action-regression, sync, UI, and storage tests. Module 9 currently passes 56 tests plus lint and production build; secret scan and deployment are still pending.
 - The dashboard currently contains one synthetic acceptance record created by the live Action smoke test. It is clearly about the EGLearn project and may be removed with **删除全部记录** before real usage if the learner wants an empty history.
 
 ## Commands
@@ -89,12 +92,12 @@ npm run check
 
 ## Next concrete task
 
-In the ChatGPT desktop app, open a new empty **Chat**, choose **Start new voice chat** before sending any text, read the Site's starter, and complete one real 8–10 minute practice. End Voice, copy the Site's complete review prompt into the same Chat, copy the JSON result, and use **从剪贴板读取并检查** on the dashboard. Confirm the record survives a reload. Then run the short-sample, dual-session, prompt-injection, and clipboard-denial cases in `docs/ACCEPTANCE.md`.
+Push and deploy Module 9, then in the ChatGPT desktop app open a new empty **Chat**, choose **Start new voice chat** before sending any text, read the Site's starter, and complete one real 15–20 minute practice. End Voice, copy the Site's deep-review prompt into the same Chat, copy the JSON result, and use **从剪贴板读取并检查** on the dashboard. Confirm that the history shows multiple segments, the complete issue list, and the audio boundary or directly heard observations. Then run the short-sample, prompt-injection, and clipboard-denial cases in `docs/ACCEPTANCE.md`.
 
 ## Open risks
 
 - Post-voice transcripts are not guaranteed to be verbatim; corrections must remain conservative.
-- Text cannot support pronunciation scoring and may not support fluency scoring without timing evidence.
+- A post-Voice text context cannot support pronunciation scoring or precise fluency timing. Only direct Voice evidence/checkpoints may add qualitative oral observations; this is not a phoneme, accent, WPM, or duration analyzer.
 - The private Action credential is single-owner. Publishing or sharing the GPT requires per-user OAuth and owner-isolated rows first.
 - Ordinary Chat has no EGLearn plugin or Action context, so the full post-Voice review prompt must be pasted every practice. A short command alone is not reliable.
 - Starting the Chat with a text bootstrap defeats the intended GPT-Live entry path; the short coaching instruction must be spoken after Voice starts.

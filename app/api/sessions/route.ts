@@ -4,7 +4,7 @@ import {
   listCloudSessions,
   saveCloudSession,
 } from "@/db/sessions";
-import { reviewSchema } from "@/lib/review-contract.mjs";
+import { reviewInputSchema } from "@/lib/review-contract.mjs";
 
 async function requireBrowserUser() {
   const user = await getChatGPTUser();
@@ -48,10 +48,10 @@ export async function POST(request: Request) {
 
   try {
     const payload = (await request.json()) as { review?: unknown };
-    const parsed = reviewSchema.safeParse(payload.review);
+    const parsed = reviewInputSchema.safeParse(payload.review);
     if (!parsed.success) {
       return Response.json(
-        { error: "复盘不符合 EGLearn v1.0 契约。" },
+        { error: "复盘不符合 EGLearn v1.0/v1.1 契约。" },
         { status: 400 },
       );
     }

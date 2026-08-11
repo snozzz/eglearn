@@ -2,13 +2,13 @@
 
 ## Product decision
 
-The default speaking surface is ordinary Chat in the ChatGPT desktop app, started directly in Voice so the conversation uses GPT-Live. EGLearn supplies the spoken session marker, the complete post-Voice review prompt, and the private record system. It does not proxy the OpenAI API.
+The default speaking surface is ordinary Chat in the ChatGPT desktop app, started directly in Voice so the conversation uses GPT-Live. EGLearn supplies the spoken session marker, live checkpoint guidance, the complete post-Voice review prompt, and the private record system. It does not proxy the OpenAI API.
 
 ```mermaid
 flowchart LR
   U["Learner"] --> V["New empty Chat → GPT-Live Voice"]
   V --> T["End Voice; same Chat"]
-  T -->|"paste complete review prompt"| R["One structured JSON review"]
+  T -->|"paste deep-review prompt"| R["One v1.1 structured JSON review"]
   R -->|"explicit clipboard copy"| P["Preview and confirm in EGLearn"]
   P --> D["Private Sites D1 + local cache"]
   D --> H["History, trends, retry comparisons"]
@@ -19,7 +19,7 @@ flowchart LR
 
 - The learner stays in ChatGPT for the live conversation instead of opening a second recorder.
 - A ChatGPT Voice conversation must begin as a new, empty voice chat. Sending a long text bootstrap first would start a text-first chat and offer dictation instead of the intended live conversation.
-- The short coaching instruction is therefore spoken after Voice starts. The long v1.0 review contract is pasted only after Voice ends, when text is appropriate.
+- The short coaching instruction is therefore spoken after Voice starts. The long v1.1 review contract is pasted only after Voice ends, when text is appropriate.
 - Ordinary Chat does not load EGLearn's private plugin, Action, or repository files. The complete post-Voice prompt must be self-contained.
 - The dashboard handles durable records, recurring-error aggregation, retry comparisons, and optional Obsidian export without an OpenAI API key.
 
@@ -28,18 +28,19 @@ flowchart LR
 1. Create a new, empty Chat in the ChatGPT desktop app.
 2. Select **Start new voice chat** before sending any message.
 3. Read the short starter beginning with `EGLearn session starts now`.
-4. Practise in English and end Voice.
+4. Practise in English. GPT-Live may make at most three short checkpoints when it directly hears a high-confidence pronunciation or speaking-flow issue; repeat once and continue.
 5. Paste the complete review prompt into the same Chat.
 6. Copy the single JSON block, import it into EGLearn, preview the quoted evidence, and confirm the save.
 
 `lib/chat-live-prompts.mjs` is the single source for the spoken starter and complete review prompt. The prompt derives the controlled rule IDs and exact no-assessment reasons from the same review-contract module used by the dashboard parser.
 
-The post-Voice transcript may not be verbatim. The prompt must not claim access to raw audio or precise timing. Consequently:
+The post-Voice transcript may not be verbatim, and a normal ChatGPT conversation does not promise a separate raw-audio file or word-level timing feed for EGLearn. Consequently the review has two explicit tracks:
 
-- pronunciation is not assessed from text;
-- fluency is unassessed without timing evidence;
-- speaking duration is omitted;
-- every correction cites a learner utterance;
+- transcript evidence drives the full language review: 3–8 segments, up to 12 unique issues, strengths, useful expressions, and retry drills;
+- `oralAnalysis` can use direct Voice evidence only when the same Chat context genuinely exposes it or a checkpoint was completed;
+- transcript-only reviews must set `evidenceMode=not_available` and leave pronunciation and fluency unassessed;
+- no review may infer accent, phonemes, connected speech, WPM, pause seconds, speaking duration, or an audio score from text;
+- every language correction cites a learner utterance; Voice checkpoint text is not learner evidence;
 - recurrence counts come from stored records, not model memory.
 
 The importer performs structural validation: it verifies that quotes exist and that scores and classifications obey the contract. Because the dashboard does not receive an independently trusted transcript, it cannot prove that a quote is verbatim. The learner previews the evidence before saving.
@@ -52,7 +53,7 @@ The importer performs structural validation: it verifies that quotes exist and t
 
 ### Review importer and dashboard
 
-`app/review-dashboard.tsx` can read the copied JSON from the clipboard after an explicit click, or accept a manual paste. Both paths pass through `parseReviewText`; input over 64 KiB is rejected. The learner previews the quoted evidence before confirming.
+`app/review-dashboard.tsx` can read the copied JSON from the clipboard after an explicit click, or accept a manual paste. Both paths pass through `parseReviewText`; input over 64 KiB is rejected. The learner previews the quoted evidence, segment cards, full issue list, and oral evidence boundary before confirming.
 
 The browser then saves the normalized review through the authenticated same-origin `/api/sessions` route. The server generates record IDs and timestamps and stores the review in Sites D1. IndexedDB remains an offline cache. Cloud and local copies are merged by normalized review content before progress aggregation.
 
@@ -64,7 +65,7 @@ Cross-session aggregation uses only controlled `ruleId` values. One distinct ses
 
 ### Obsidian export
 
-Each session renders to a stable, timezone-aware Markdown filename with typed YAML properties, a hashed managed region, and a permanent `My notes` section. Download and copy are the primary paths. The optional `obsidian://new` shortcut copies the Markdown first and requests creation; it never appends to or overwrites an existing note. EGLearn remains the authoritative data store.
+Each session renders to a stable, timezone-aware Markdown filename with typed YAML properties, a hashed managed region, a permanent `My notes` section, segment drills, and any direct oral observations. Download and copy are the primary paths. The optional `obsidian://new` shortcut copies the Markdown first and requests creation; it never appends to or overwrites an existing note. EGLearn remains the authoritative data store.
 
 ## Security guardrails
 

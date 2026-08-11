@@ -15,7 +15,7 @@ export default function Home() {
           <span className="brandMark" aria-hidden="true">e</span>
           <span>EGLearn</span>
         </a>
-        <span className="buildBadge">Chat + GPT-Live · v1.2</span>
+        <span className="buildBadge">Chat + GPT-Live · v1.3</span>
       </nav>
 
       <section className="hero" id="top">
@@ -23,7 +23,7 @@ export default function Home() {
         <h1>每次开口，<br />都留下进步的证据。</h1>
         <p className="heroCopy">
           在 ChatGPT Plus 的普通 Chat 里用 GPT-Live 练口语，退出 Voice 后生成一份
-          可核对、可追踪的结构化复盘。无需 OpenAI API，也无需 Work 或插件。
+          可核对、可追踪的深度结构化复盘；Voice 中可以即时纠音，结束后再看完整分段反馈。无需 OpenAI API，也无需 Work 或插件。
         </p>
         <div className="heroActions">
           <a className="primaryButton" href="#live">开始一次练习</a>
@@ -47,7 +47,7 @@ export default function Home() {
             <span className="stepNumber">02</span>
             <div className="stepIcon" aria-hidden="true">✦</div>
             <h3>退出 Voice 后复盘</h3>
-            <p>复制完整复盘口令到同一 Chat，让它只返回符合 EGLearn 契约的 JSON。</p>
+            <p>复制深度复盘口令到同一 Chat，让它覆盖完整练习并只返回符合 EGLearn 契约的 JSON。</p>
           </li>
           <li className="stepCard">
             <span className="stepNumber">03</span>
@@ -74,7 +74,7 @@ export default function Home() {
           </article>
           <article>
             <span>02</span>
-            <div><h3>记录要可核对</h3><p>纠错必须引用学习者原句；无法从转写判断的发音不乱打分。</p></div>
+            <div><h3>口语证据要诚实</h3><p>Voice 中直接听到的发音可以即时纠正；结束后如果没有可核对音频，EGLearn 会明确标记边界，不从文字猜发音。</p></div>
           </article>
           <article>
             <span>03</span>

@@ -8,6 +8,7 @@ import {
   sessionMarkdownFilename,
 } from "../lib/obsidian-export.mjs";
 import { validReview } from "./fixtures/valid-review.mjs";
+import { validReviewV11 } from "./fixtures/valid-review-v11.mjs";
 
 const record = {
   id: "01K1ABCDEF1234567890XYZAB",
@@ -58,6 +59,16 @@ test("serializes hostile topic text without breaking YAML or managed markers", a
   assert.equal(markdown.match(/<!-- egl:managed:start -->/g).length, 1);
   assert.equal(markdown.match(/<!-- egl:managed:end -->/g).length, 1);
   assert.match(markdown, /&lt;!-- egl:managed:end --&gt;/);
+});
+
+test("exports v1.1 oral observations and segment drills", async () => {
+  const markdown = await renderSessionMarkdown({ ...record, review: validReviewV11 }, { timeZone: "UTC" });
+  assert.match(markdown, /## Oral analysis/);
+  assert.match(markdown, /reliability/);
+  assert.match(markdown, /Live corrections/);
+  assert.match(markdown, /## Segment review/);
+  assert.match(markdown, /Project decision/);
+  assert.match(markdown, /Drill:/);
 });
 
 test("builds an encoded clipboard URI without destructive flags", () => {

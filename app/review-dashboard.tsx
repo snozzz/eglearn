@@ -12,7 +12,10 @@ import {
   renderSessionMarkdown,
   sessionMarkdownFilename,
 } from "@/lib/obsidian-export.mjs";
-import { parseReviewText } from "@/lib/review-contract.mjs";
+import {
+  audioEvidenceUnavailableReasonZh,
+  parseReviewText,
+} from "@/lib/review-contract.mjs";
 import {
   clearSessions,
   listSessions,
@@ -26,18 +29,59 @@ type ReviewScore = {
   status: "assessed" | "unassessed";
   band: number | null;
   rationaleZh: string;
+  basis?: "transcript" | "audio" | "none";
+};
+
+type Evidence = { quote: string };
+type PronunciationObservation = {
+  wordEn: string;
+  targetEn: string;
+  issueZh: string;
+  cueEn: string;
+  confidence: "high" | "medium";
+};
+type OralAnalysis = {
+  evidenceMode: "audio" | "not_available";
+  confidence: "high" | "medium" | "low";
+  summaryZh: string;
+  pronunciation: {
+    status: "assessed" | "unassessed";
+    summaryZh: string;
+    observations: PronunciationObservation[];
+  };
+  fluency: {
+    status: "assessed" | "unassessed";
+    band: number | null;
+    summaryZh: string;
+    signals: Array<{ dimension: string; observationZh: string }>;
+  };
+  liveCorrections: Array<{
+    targetEn: string;
+    cueEn: string;
+    outcome: "improved_after_repeat" | "needs_more_repetition" | "not_verified";
+  }>;
+};
+type SegmentReview = {
+  titleEn: string;
+  learnerGoalZh: string;
+  evidence: Evidence[];
+  observationZh: string;
+  improvedResponseEn: string;
+  drillPromptEn: string;
 };
 
 type ReviewData = {
-  schemaVersion: "1.0";
+  schemaVersion: "1.0" | "1.1";
   topicEn: string;
   sample: { status: "sufficient" | "insufficient"; learnerWordCount: number; substantiveTurnCount: number; reasonZh: string };
   summaryZh: string;
-  strengths: Array<{ dimension: string; noteZh: string; evidence: Array<{ quote: string }> }>;
+  strengths: Array<{ dimension: string; noteZh: string; evidence: Evidence[] }>;
   keyIssues: Array<{ ruleId: string; impact: string; original: string; rewrite: string; explanationZh: string; practiceCueEn: string }>;
   scores: { grammar: ReviewScore; vocabulary: ReviewScore; communication: ReviewScore; fluency: ReviewScore };
-  pronunciation: { status: "not_assessed"; reasonZh: string };
+  pronunciation: { status: "not_assessed" | "assessed" | "unassessed"; reasonZh: string };
   usefulExpressions: Array<{ quote: string; whyItWorksZh: string; reusablePatternEn: string }>;
+  segments?: SegmentReview[];
+  oralAnalysis?: OralAnalysis;
   nextPractice: { focusRuleIds: string[]; scenarioEn: string; promptsEn: string[]; retrySentenceEn: string | null };
 };
 
@@ -90,6 +134,127 @@ function ScoreStrip({ review }: { review: ReviewData }) {
   );
 }
 
+function OralAnalysisPanel({ review, compact = false }: { review: ReviewData; compact?: boolean }) {
+  const oral = review.oralAnalysis;
+  if (!oral) {
+    return (
+      <section className={`oralPanel oralLegacy ${compact ? "oralPanelCompact" : ""}`}>
+        <div className="oralPanelHeading"><h5>口语证据边界</h5><span>旧版复盘</span></div>
+        <p>{review.pronunciation.reasonZh}</p>
+        {!compact && <small>这条记录只有文字复盘；下一次请在同一个 Voice 会话里让教练做即时 checkpoint。</small>}
+      </section>
+    );
+  }
+
+  const audioAvailable = oral.evidenceMode === "audio";
+  const outcomeLabels = {
+    improved_after_repeat: "重说后改善",
+    needs_more_repetition: "需要继续练习",
+    not_verified: "尚未核对",
+  };
+
+  return (
+    <section className={`oralPanel ${audioAvailable ? "oralAudio" : "oralUnavailable"} ${compact ? "oralPanelCompact" : ""}`}>
+      <div className="oralPanelHeading">
+        <h5>口语观察</h5>
+        <span>{audioAvailable ? "来自 Voice 直接音频" : "未获得可核对音频"}</span>
+      </div>
+      <p>{oral.summaryZh}</p>
+      {!audioAvailable && <div className="oralBoundary">{audioEvidenceUnavailableReasonZh}</div>}
+      {compact ? (
+        <>
+          {audioAvailable && oral.pronunciation.observations[0] && (
+            <div className="oralCompactCue"><strong>{oral.pronunciation.observations[0].wordEn}</strong><span>{oral.pronunciation.observations[0].issueZh}</span></div>
+          )}
+          {oral.liveCorrections.length > 0 && <small>{oral.liveCorrections.length} 次 Voice 即时纠音记录</small>}
+        </>
+      ) : (
+        <>
+          <div className="oralGrid">
+            <div className="oralCard">
+              <div className="oralCardHeading"><strong>发音</strong><span>{oral.pronunciation.status === "assessed" ? "已观察" : "未评估"}</span></div>
+              <p>{oral.pronunciation.summaryZh}</p>
+              {oral.pronunciation.observations.length > 0 && (
+                <ul className="oralList">
+                  {oral.pronunciation.observations.map((item) => (
+                    <li key={`${item.wordEn}-${item.targetEn}`}>
+                      <strong>{item.wordEn} → {item.targetEn}</strong>
+                      <span>{item.issueZh}</span>
+                      <code>{item.cueEn}</code>
+                      <small>置信度：{item.confidence === "high" ? "高" : "中"}</small>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <div className="oralCard">
+              <div className="oralCardHeading"><strong>流利度信号</strong><span>{oral.fluency.status === "assessed" ? `${oral.fluency.band ?? "—"} / 5` : "未评估"}</span></div>
+              <p>{oral.fluency.summaryZh}</p>
+              {oral.fluency.signals.length > 0 && (
+                <ul className="oralList">
+                  {oral.fluency.signals.map((signal) => <li key={`${signal.dimension}-${signal.observationZh}`}><strong>{signal.dimension}</strong><span>{signal.observationZh}</span></li>)}
+                </ul>
+              )}
+            </div>
+          </div>
+          {oral.liveCorrections.length > 0 && (
+            <div className="liveCorrections">
+              <strong>Voice 即时纠音</strong>
+              <ul className="oralList">
+                {oral.liveCorrections.map((correction) => (
+                  <li key={`${correction.targetEn}-${correction.cueEn}`}>
+                    <strong>{correction.targetEn}</strong><span>{correction.cueEn}</span><small>{outcomeLabels[correction.outcome]}</small>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </>
+      )}
+    </section>
+  );
+}
+
+function IssueList({ review }: { review: ReviewData }) {
+  if (review.keyIssues.length === 0) return <p className="issueEmpty">这次没有记录高置信度重点问题。</p>;
+  return (
+    <div className="issueList">
+      {review.keyIssues.map((issue, index) => (
+        <article className="issueItem" key={issue.ruleId}>
+          <div className="issueItemHeading"><span>{String(index + 1).padStart(2, "0")}</span><strong>{issue.ruleId}</strong><em>{issue.impact.replaceAll("_", " ")}</em></div>
+          <del>{issue.original}</del>
+          <strong className="issueRewrite">{issue.rewrite}</strong>
+          <p>{issue.explanationZh}</p>
+          <code>{issue.practiceCueEn}</code>
+        </article>
+      ))}
+    </div>
+  );
+}
+
+function SegmentList({ segments }: { segments?: SegmentReview[] }) {
+  if (!segments) return null;
+  if (segments.length === 0) return <section className="segmentPanel"><div className="oralPanelHeading"><h5>分段复盘</h5><span>样本不足</span></div><p>这条复盘没有足够内容形成分段。</p></section>;
+  return (
+    <section className="segmentPanel">
+      <div className="oralPanelHeading"><h5>分段复盘</h5><span>{segments.length} 段</span></div>
+      <div className="segmentGrid">
+        {segments.map((segment, index) => (
+          <article className="segmentCard" key={`${segment.titleEn}-${index}`}>
+            <span>0{index + 1}</span>
+            <h6>{segment.titleEn}</h6>
+            <p>{segment.learnerGoalZh}</p>
+            <blockquote>“{segment.evidence[0]?.quote}”</blockquote>
+            <p>{segment.observationZh}</p>
+            <strong>{segment.improvedResponseEn}</strong>
+            <code>{segment.drillPromptEn}</code>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function ProgressSection({ sessions }: { sessions: StoredSession[] }) {
   const progress = useMemo(() => buildProgress(sessions) as ProgressData, [sessions]);
   const statusLabels = { new: "新问题", repeated: "反复", frequent: "高频" };
@@ -97,7 +262,7 @@ function ProgressSection({ sessions }: { sessions: StoredSession[] }) {
   return (
     <div className="progressSection">
       <div className="historyHeading">
-        <div><span className="panelLabel"><span>04</span> 进步线索</span><h3>从记录里看趋势</h3></div>
+        <div><span className="panelLabel"><span>06</span> 进步线索</span><h3>从记录里看趋势</h3></div>
         <span>没有练习机会，不判断“已掌握”</span>
       </div>
 
@@ -461,7 +626,7 @@ export function ReviewDashboard() {
             id="review-json"
             value={rawReview}
             onChange={(event) => setRawReview(event.target.value)}
-            placeholder={'```json\n{\n  "schemaVersion": "1.0",\n  ...\n}\n```'}
+            placeholder={'```json\n{\n  "schemaVersion": "1.1",\n  ...\n}\n```'}
             spellCheck={false}
           />
           <p className="inputHint">在 Chat 里点击 JSON 代码块的复制按钮，然后回来一键读取；也可以手工粘贴纯 JSON 或 fenced JSON。</p>
@@ -495,6 +660,8 @@ export function ReviewDashboard() {
               <h3>{pendingReview.topicEn}</h3>
               <p>{pendingReview.summaryZh}</p>
               <ScoreStrip review={pendingReview} />
+              <OralAnalysisPanel review={pendingReview} compact />
+              {pendingReview.segments && <p className="previewMeta">已覆盖 {pendingReview.segments.length} 个练习段落 · {pendingReview.keyIssues.length} 个重点问题</p>}
               {pendingReview.keyIssues.length > 0 && (
                 <div className="previewIssue">
                   <span>优先修正</span>
@@ -512,7 +679,7 @@ export function ReviewDashboard() {
 
       <div className="historySection">
         <div className="historyHeading">
-          <div><span className="panelLabel"><span>03</span> 历史记录</span><h3>最近练习</h3></div>
+          <div><span className="panelLabel"><span>05</span> 历史记录</span><h3>最近练习</h3></div>
           <span>{sessions.length} 次已保存</span>
         </div>
 
@@ -530,10 +697,12 @@ export function ReviewDashboard() {
                     <h4>{session.review.topicEn}</h4>
                     <p>{session.review.summaryZh}</p>
                   </div>
-                  <span className="issueCount">{session.review.keyIssues.length} 个重点</span>
+                  <span className="issueCount">{session.review.keyIssues.length} 个重点{session.review.segments ? ` · ${session.review.segments.length} 段` : ""}</span>
                 </summary>
                 <div className="sessionDetail">
                   <ScoreStrip review={session.review} />
+                  <OralAnalysisPanel review={session.review} />
+                  <SegmentList segments={session.review.segments} />
                   <div className="detailColumns">
                     <div>
                       <h5>这次做得好</h5>
@@ -547,6 +716,10 @@ export function ReviewDashboard() {
                       {session.review.nextPractice.retrySentenceEn && <code>{session.review.nextPractice.retrySentenceEn}</code>}
                     </div>
                   </div>
+                  <section className="issueSection">
+                    <div className="oralPanelHeading"><h5>问题清单</h5><span>{session.review.keyIssues.length} 个</span></div>
+                    <IssueList review={session.review} />
+                  </section>
                   <div className="exportActions" aria-label={`${session.review.topicEn} 导出操作`}>
                     <button type="button" onClick={() => downloadMarkdown(session)}>下载 Markdown</button>
                     <button type="button" onClick={() => copyMarkdown(session)}>复制 Markdown</button>
@@ -563,7 +736,7 @@ export function ReviewDashboard() {
 
       <div className="obsidianSection">
         <div className="historyHeading">
-          <div><span className="panelLabel"><span>05</span> 可选出口</span><h3>Obsidian 设置</h3></div>
+          <div><span className="panelLabel"><span>07</span> 可选出口</span><h3>Obsidian 设置</h3></div>
           <span>下载 / 复制始终可用</span>
         </div>
         <div className="obsidianGrid">

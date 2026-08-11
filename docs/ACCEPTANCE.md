@@ -1,26 +1,30 @@
 # MVP acceptance checklist
 
-Module 8 changes the default path to ordinary Chat + GPT-Live. Automated contract, rendering, storage, sync, Action-regression, and security tests run through `npm run check`. One real microphone-led practice remains the human acceptance step.
+Module 9 deepens the ordinary Chat + GPT-Live path. Automated contract, rendering, storage, sync, Action-regression, and security tests run through `npm run check`. One real microphone-led practice remains the human acceptance step.
 
 ## Chat + GPT-Live
 
 - [ ] A new, empty Chat started with **Start new voice chat** behaves as a live conversation rather than dictation.
 - [ ] Reading the short starter creates the marker `EGLearn session starts now` and leads to one-question-at-a-time English practice.
-- [ ] Ending Voice and pasting the complete review prompt into the same Chat returns exactly one fenced JSON block.
+- [ ] Ending Voice and pasting the deep-review prompt into the same Chat returns exactly one fenced JSON block.
 - [ ] The review only uses learner English after the latest marker.
 - [ ] A short sample is marked insufficient and receives no grammar, vocabulary, or communication bands.
 - [ ] Prompt-injection language spoken as practice content does not change the output contract.
-- [ ] The review makes no pronunciation, timing, duration, CEFR, percentage, streak, or model-memory recurrence claims.
+- [ ] A long sample produces multiple segments and more than a fixed three-item ceiling when evidence supports it.
+- [ ] The review includes a complete issue list, useful expressions, and retry drills, without inventing low-confidence problems to fill quotas.
+- [ ] If a Voice checkpoint was directly heard, `oralAnalysis` may contain qualitative pronunciation or fluency observations and the dashboard displays them.
+- [ ] If only text is available after Voice, `evidenceMode=not_available`, pronunciation and fluency remain unassessed, and no timing/duration/CEFR/percentage/streak/model-memory claims appear.
 - [ ] The prompt does not call or mention a successful Action, plugin, API request, or save.
 
 ## Clipboard and dashboard
 
-- [ ] **复制完整复盘口令** copies the complete v1.0 contract; denied write permission reveals selectable fallback text.
+- [ ] **复制深度复盘口令** copies the complete v1.1 contract; denied write permission reveals selectable fallback text.
 - [ ] **从剪贴板读取并检查** accepts valid pure JSON and fenced JSON and immediately displays the preview.
 - [ ] Empty, denied, or unsupported clipboard reads preserve manual paste and focus the textarea.
 - [x] Inputs over 64 KiB are rejected before JSON parsing.
 - [ ] Malformed JSON, unknown fields, score violations, and extra prose are rejected.
 - [ ] Saving still requires an explicit preview confirmation.
+- [ ] Preview and history show the full issue list, segment cards, and the oral evidence boundary.
 - [ ] Confirmed records survive reload and appear after signing in on another browser.
 - [ ] Cloud and local copies of the same normalized review count only once.
 - [ ] A sync failure preserves the local fallback and reports local-only state.
@@ -37,6 +41,7 @@ Module 8 changes the default path to ordinary Chat + GPT-Live. Automated contrac
 ## Obsidian
 
 - [x] Markdown YAML parses with numeric scores and stable session identity.
+- [ ] v1.1 Markdown includes oral observations and segment drills; legacy v1.0 export remains readable.
 - [x] Filename is cross-platform and stable for repeated export.
 - [x] Exactly one managed start/end marker survives hostile review text.
 - [ ] Download and copy work without a Vault setting.
@@ -54,6 +59,6 @@ Module 8 changes the default path to ordinary Chat + GPT-Live. Automated contrac
 
 - [x] No OpenAI API key or ChatGPT session token is required or documented.
 - [x] The Chat workflow prompt contains no credential-shaped material.
-- [x] `npm run check` passes on the final module source (52 tests; 68 repository files scanned for secrets).
-- [x] Module source commit `7282200` and tag `module-8-chat-gpt-live` are pushed; the final deployment handoff follows as a documentation-only commit.
+- [x] `npm run check` passes on the final module source (56 tests; 68 repository files scanned for secrets).
+- [ ] Module 9 source and deployment commit/tag are pushed; the final deployment handoff records the live version.
 - [x] `HANDOFF.md` names the current status, limitations, and next decision.

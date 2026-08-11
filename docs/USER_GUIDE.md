@@ -21,15 +21,17 @@ Do not send a text prompt before starting Voice. According to the current ChatGP
 1. In the ChatGPT desktop app, choose **Chat** and create a new, empty chat.
 2. Before sending anything, select **Start new voice chat**.
 3. On EGLearn, find **对着 GPT-Live 读开场口令** and read that English text aloud. The marker `EGLearn session starts now` separates this practice from older content.
-4. Practice. The coach should keep its turns short and avoid interrupting minor errors.
+4. Practice for as long as useful. The coach should keep its turns short. Every few substantive turns it may make a brief checkpoint for a high-confidence pronunciation or speaking-flow issue that it directly hears; repeat once and continue.
 5. Select **End** but stay in the same Chat.
-6. On EGLearn, choose **复制完整复盘口令**, paste it into that Chat, and send it.
+6. On EGLearn, choose **复制深度复盘口令**, paste it into that Chat, and send it.
 7. Copy the single JSON block Chat returns.
 8. Return to EGLearn and choose **从剪贴板读取并检查**. If clipboard permission is unavailable, paste into the textarea and choose **检查已粘贴内容**.
 9. Check the quoted learner sentence, then choose **确认保存并同步**.
 10. The record appears in history and is cached in this browser. If private cloud sync is unavailable, the record remains in the local cache for a later retry.
 
-The dashboard performs structural validation. It cannot independently prove that a quote is verbatim because the transcript is not separately imported.
+The dashboard performs structural validation. It cannot independently prove that a quote is verbatim because the transcript is not separately imported. A deep v1.1 review should include multiple segments, a fuller issue list, useful expressions, and retry drills instead of stopping at three bullets.
+
+Pronunciation and fluency have a hard evidence boundary. If the same Voice context can directly verify a checkpoint, the review may contain qualitative observations such as a target word or a self-correction. If the returned context contains only text, the dashboard shows “未获得可核对音频” and leaves those dimensions unassessed. It never infers accent, phonemes, WPM, pause seconds, or speaking duration from a transcript.
 
 The older private Custom GPT + Action configuration remains in `gpt/` as an optional compatibility path, but it is not required for the Chat + GPT-Live workflow.
 
@@ -58,11 +60,11 @@ The shortcut never appends to or overwrites an existing note.
 ## Troubleshooting
 
 - **Voice button is only dictation:** start a brand-new empty Chat and select **Start new voice chat** before sending text.
-- **Chat behaves like a general assistant:** end the session, copy the complete review prompt from EGLearn, and paste it into the same Chat. Do not use the short spoken starter as the review request.
+- **Chat behaves like a general assistant:** end the session, copy the deep-review prompt from EGLearn, and paste it into the same Chat. Do not use the short spoken starter as the review request.
 - **Clipboard read is denied:** paste the copied JSON into the textarea with ⌘V / Ctrl+V and choose **检查已粘贴内容**.
 - **Dashboard says local-only:** sign in to the private Site and choose **刷新** or **同步现有记录**.
 - **Chat adds prose around JSON:** paste the complete review prompt again and ask for exactly one fenced JSON block.
-- **Dashboard rejects a review:** fix the listed field or regenerate the review with the v1.0 knowledge file.
+- **Dashboard rejects a review:** fix the listed field or regenerate it with the current v1.1 deep-review prompt. Legacy v1.0 records remain importable.
 - **Clipboard is blocked:** use the manual-copy box or download Markdown.
 - **Obsidian does not open:** confirm Obsidian is installed and the Vault/folder values match this device; use download instead.
 - **History disappeared:** confirm you are signed in to the private Site, then refresh cloud history. Unsynced local-only records can still be lost by clearing browser data.
