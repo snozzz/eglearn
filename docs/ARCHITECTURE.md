@@ -28,7 +28,7 @@ flowchart LR
 1. Create a new, empty Chat in the ChatGPT desktop app.
 2. Select **Start new voice chat** before sending any message.
 3. Read the short starter beginning with `EGLearn session starts now`.
-4. Practise in English. GPT-Live may make at most three short checkpoints when it directly hears a high-confidence pronunciation or speaking-flow issue; repeat once and continue.
+4. Practise in English. GPT-Live may make at most five short, labelled `[EGLearn live checkpoint]` messages when it directly hears pronunciation, fluency, naturalness, or grammar feedback; repeat once and continue. Before ending, it gives a labelled `[EGLearn oral recap]` so the observations remain in the Chat transcript.
 5. Paste the complete review prompt into the same Chat.
 6. Copy the single JSON block, import it into EGLearn, preview the quoted evidence, and confirm the save.
 
@@ -37,7 +37,7 @@ flowchart LR
 The post-Voice transcript may not be verbatim, and a normal ChatGPT conversation does not promise a separate raw-audio file or word-level timing feed for EGLearn. Consequently the review has two explicit tracks:
 
 - transcript evidence drives the full language review: 3–8 segments, up to 12 unique issues, strengths, useful expressions, and retry drills;
-- `oralAnalysis` can use direct Voice evidence only when the same Chat context genuinely exposes it or a checkpoint was completed;
+- `oralAnalysis` can use direct Voice evidence only when the same Chat context genuinely exposes it, or when a labelled checkpoint/recap was written into the Chat transcript (`evidenceMode=live_checkpoint`);
 - transcript-only reviews must set `evidenceMode=not_available` and leave pronunciation and fluency unassessed;
 - no review may infer accent, phonemes, connected speech, WPM, pause seconds, speaking duration, or an audio score from text;
 - every language correction cites a learner utterance; Voice checkpoint text is not learner evidence;

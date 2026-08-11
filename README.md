@@ -22,7 +22,7 @@ Private MVP: [eglearn-speaking.hd701108.chatgpt.site](https://eglearn-speaking.h
 
 Starting from an empty chat in Voice mode is what activates GPT-Live. The full review contract is intentionally pasted only after Voice ends, because sending a text bootstrap first would start the chat in text/dictation mode. The default workflow uses no Work mode, plugin, GPT Action, or OpenAI API. See [architecture](docs/ARCHITECTURE.md).
 
-The review has two evidence tracks. Transcript evidence powers the deep language review: segments, up to twelve high-value issues, strengths, useful expressions, and retry drills. Voice-time checkpoints can add qualitative pronunciation and fluency observations only when the same Chat can directly hear and verify them. If the post-Voice context exposes only text, EGLearn records “no audio evidence” instead of guessing pronunciation, accent, WPM, or pause timing.
+The review has two evidence tracks. Transcript evidence powers the deep language review: segments, up to twelve high-value issues, strengths, useful expressions, and retry drills. During Voice, the coach writes `[EGLearn live checkpoint]` and `[EGLearn oral recap]` messages containing directly heard pronunciation, fluency, and naturalness feedback. The post-Voice prompt can recover those labelled observations from the Chat transcript. If the Chat contains only ordinary text, EGLearn records “no audio evidence” instead of guessing pronunciation, accent, WPM, or pause timing.
 
 ## Development
 

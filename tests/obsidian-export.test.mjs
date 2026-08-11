@@ -66,6 +66,8 @@ test("exports v1.1 oral observations and segment drills", async () => {
   assert.match(markdown, /## Oral analysis/);
   assert.match(markdown, /reliability/);
   assert.match(markdown, /Live corrections/);
+  assert.match(markdown, /Voice checkpoints/);
+  assert.match(markdown, /naturalness/);
   assert.match(markdown, /## Segment review/);
   assert.match(markdown, /Project decision/);
   assert.match(markdown, /Drill:/);

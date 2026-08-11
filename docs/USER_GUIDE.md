@@ -21,7 +21,7 @@ Do not send a text prompt before starting Voice. According to the current ChatGP
 1. In the ChatGPT desktop app, choose **Chat** and create a new, empty chat.
 2. Before sending anything, select **Start new voice chat**.
 3. On EGLearn, find **对着 GPT-Live 读开场口令** and read that English text aloud. The marker `EGLearn session starts now` separates this practice from older content.
-4. Practice for as long as useful. The coach should keep its turns short. Every few substantive turns it may make a brief checkpoint for a high-confidence pronunciation or speaking-flow issue that it directly hears; repeat once and continue.
+4. Practice for as long as useful. The coach should keep its turns short. Every few substantive turns it may say **`[EGLearn live checkpoint]`** and record a directly heard pronunciation, fluency, naturalness, or grammar observation; repeat once when asked and continue. Before you finish, it should say **`[EGLearn oral recap]`** with a short summary so the feedback remains in the Chat transcript.
 5. Select **End** but stay in the same Chat.
 6. On EGLearn, choose **复制深度复盘口令**, paste it into that Chat, and send it.
 7. Copy the single JSON block Chat returns.
@@ -31,7 +31,7 @@ Do not send a text prompt before starting Voice. According to the current ChatGP
 
 The dashboard performs structural validation. It cannot independently prove that a quote is verbatim because the transcript is not separately imported. A deep v1.1 review should include multiple segments, a fuller issue list, useful expressions, and retry drills instead of stopping at three bullets.
 
-Pronunciation and fluency have a hard evidence boundary. If the same Voice context can directly verify a checkpoint, the review may contain qualitative observations such as a target word or a self-correction. If the returned context contains only text, the dashboard shows “未获得可核对音频” and leaves those dimensions unassessed. It never infers accent, phonemes, WPM, pause seconds, or speaking duration from a transcript.
+Pronunciation and fluency have a hard evidence boundary. The review may use a checkpoint or oral recap only when those labels actually appear in the Chat transcript; it will show this as “Voice checkpoint 已写入 Chat”. If the returned context contains only ordinary text, the dashboard shows “未获得可核对音频” and leaves those dimensions unassessed. It never infers accent, phonemes, WPM, pause seconds, or speaking duration from a transcript.
 
 The older private Custom GPT + Action configuration remains in `gpt/` as an optional compatibility path, but it is not required for the Chat + GPT-Live workflow.
 

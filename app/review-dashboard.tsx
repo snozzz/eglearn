@@ -29,7 +29,7 @@ type ReviewScore = {
   status: "assessed" | "unassessed";
   band: number | null;
   rationaleZh: string;
-  basis?: "transcript" | "audio" | "none";
+  basis?: "transcript" | "audio" | "live_checkpoint" | "none";
 };
 
 type Evidence = { quote: string };
@@ -41,7 +41,7 @@ type PronunciationObservation = {
   confidence: "high" | "medium";
 };
 type OralAnalysis = {
-  evidenceMode: "audio" | "not_available";
+  evidenceMode: "audio" | "live_checkpoint" | "not_available";
   confidence: "high" | "medium" | "low";
   summaryZh: string;
   pronunciation: {
@@ -59,6 +59,14 @@ type OralAnalysis = {
     targetEn: string;
     cueEn: string;
     outcome: "improved_after_repeat" | "needs_more_repetition" | "not_verified";
+  }>;
+  liveCheckpoints?: Array<{
+    dimension: "pronunciation" | "fluency" | "naturalness" | "grammar" | "vocabulary" | "communication";
+    observationZh: string;
+    targetEn: string | null;
+    coachCueEn: string | null;
+    learnerRepeatEn: string | null;
+    outcome: "improved_after_repeat" | "needs_more_repetition" | "not_verified" | "observation_only";
   }>;
 };
 type SegmentReview = {
@@ -146,27 +154,30 @@ function OralAnalysisPanel({ review, compact = false }: { review: ReviewData; co
     );
   }
 
-  const audioAvailable = oral.evidenceMode === "audio";
+  const voiceEvidence = oral.evidenceMode !== "not_available";
+  const checkpointMode = oral.evidenceMode === "live_checkpoint";
+  const checkpoints = oral.liveCheckpoints ?? [];
   const outcomeLabels = {
     improved_after_repeat: "重说后改善",
     needs_more_repetition: "需要继续练习",
     not_verified: "尚未核对",
+    observation_only: "观察记录",
   };
 
   return (
-    <section className={`oralPanel ${audioAvailable ? "oralAudio" : "oralUnavailable"} ${compact ? "oralPanelCompact" : ""}`}>
+    <section className={`oralPanel ${voiceEvidence ? "oralAudio" : "oralUnavailable"} ${compact ? "oralPanelCompact" : ""}`}>
       <div className="oralPanelHeading">
         <h5>口语观察</h5>
-        <span>{audioAvailable ? "来自 Voice 直接音频" : "未获得可核对音频"}</span>
+        <span>{checkpointMode ? "Voice checkpoint 已写入 Chat" : voiceEvidence ? "来自 Voice 直接音频" : "未获得可核对音频"}</span>
       </div>
       <p>{oral.summaryZh}</p>
-      {!audioAvailable && <div className="oralBoundary">{audioEvidenceUnavailableReasonZh}</div>}
+      {!voiceEvidence && <div className="oralBoundary">{audioEvidenceUnavailableReasonZh}</div>}
       {compact ? (
         <>
-          {audioAvailable && oral.pronunciation.observations[0] && (
+          {voiceEvidence && oral.pronunciation.observations[0] && (
             <div className="oralCompactCue"><strong>{oral.pronunciation.observations[0].wordEn}</strong><span>{oral.pronunciation.observations[0].issueZh}</span></div>
           )}
-          {oral.liveCorrections.length > 0 && <small>{oral.liveCorrections.length} 次 Voice 即时纠音记录</small>}
+          {(oral.liveCorrections.length + checkpoints.length) > 0 && <small>{oral.liveCorrections.length + checkpoints.length} 条 Voice 即时反馈已写入 Chat</small>}
         </>
       ) : (
         <>
@@ -204,6 +215,22 @@ function OralAnalysisPanel({ review, compact = false }: { review: ReviewData; co
                 {oral.liveCorrections.map((correction) => (
                   <li key={`${correction.targetEn}-${correction.cueEn}`}>
                     <strong>{correction.targetEn}</strong><span>{correction.cueEn}</span><small>{outcomeLabels[correction.outcome]}</small>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {checkpoints.length > 0 && (
+            <div className="liveCorrections">
+              <strong>Voice checkpoint 记录</strong>
+              <ul className="oralList">
+                {checkpoints.map((checkpoint, index) => (
+                  <li key={`${checkpoint.dimension}-${checkpoint.targetEn ?? "observation"}-${index}`}>
+                    <strong>{checkpoint.dimension}{checkpoint.targetEn ? ` · ${checkpoint.targetEn}` : ""}</strong>
+                    <span>{checkpoint.observationZh}</span>
+                    {checkpoint.coachCueEn && <code>{checkpoint.coachCueEn}</code>}
+                    {checkpoint.learnerRepeatEn && <small>你的重说：{checkpoint.learnerRepeatEn}</small>}
+                    <small>{outcomeLabels[checkpoint.outcome] ?? "观察记录"}</small>
                   </li>
                 ))}
               </ul>

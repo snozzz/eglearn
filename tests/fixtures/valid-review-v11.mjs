@@ -42,7 +42,7 @@ export const validReviewV11 = {
     grammar: { status: "assessed", band: 3, basis: "transcript", rationaleZh: "意思清楚，但叙述时态仍有一处需要稳定。" },
     vocabulary: { status: "assessed", band: 4, basis: "transcript", rationaleZh: "主题词汇够用，少数搭配可以更精确。" },
     communication: { status: "assessed", band: 4, basis: "transcript", rationaleZh: "能够解释取舍、澄清问题并推进对话。" },
-    fluency: { status: "assessed", band: 3, basis: "audio", rationaleZh: "直接听到少量开头犹豫，但整体能够持续展开。" },
+    fluency: { status: "assessed", band: 3, basis: "live_checkpoint", rationaleZh: "Voice checkpoint 记录了少量开头犹豫，但整体能够持续展开。" },
   },
   pronunciation: { status: "assessed", reasonZh: "Voice 中直接听到一处可以马上重说核对的发音观察。" },
   usefulExpressions: [
@@ -68,7 +68,7 @@ export const validReviewV11 = {
     },
   ],
   oralAnalysis: {
-    evidenceMode: "audio",
+    evidenceMode: "live_checkpoint",
     confidence: "medium",
     summaryZh: "整体表达可以持续；Voice 中直接听到一个技术词需要重说，并观察到几次开头犹豫。",
     pronunciation: {
@@ -89,6 +89,11 @@ export const validReviewV11 = {
     },
     liveCorrections: [
       { targetEn: "reliability", cueEn: "Repeat: reliability.", outcome: "improved_after_repeat" },
+    ],
+    liveCheckpoints: [
+      { dimension: "pronunciation", observationZh: "reliability 的重音需要更集中在中间音节。", targetEn: "reliability", coachCueEn: "Repeat: reliability.", learnerRepeatEn: "reliability", outcome: "improved_after_repeat" },
+      { dimension: "fluency", observationZh: "开始解释复杂取舍时出现短暂犹豫。", targetEn: null, coachCueEn: null, learnerRepeatEn: null, outcome: "observation_only" },
+      { dimension: "naturalness", observationZh: "security-related decision 比 make a security decision 更清楚。", targetEn: "make a security decision", coachCueEn: "Try: make a security-related decision.", learnerRepeatEn: "make a security-related decision", outcome: "improved_after_repeat" },
     ],
   },
   nextPractice: {

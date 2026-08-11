@@ -13,6 +13,8 @@ Module 9 deepens the ordinary Chat + GPT-Live path. Automated contract, renderin
 - [ ] A long sample produces multiple segments and more than a fixed three-item ceiling when evidence supports it.
 - [ ] The review includes a complete issue list, useful expressions, and retry drills, without inventing low-confidence problems to fill quotas.
 - [ ] If a Voice checkpoint was directly heard, `oralAnalysis` may contain qualitative pronunciation or fluency observations and the dashboard displays them.
+- [ ] Voice uses the literal `[EGLearn live checkpoint]` label during practice and `[EGLearn oral recap]` before ending, so the post-Voice prompt can recover the feedback from Chat text.
+- [ ] A checkpoint can cover pronunciation, fluency, naturalness, or grammar without turning the coach's sentence into learner evidence.
 - [ ] If only text is available after Voice, `evidenceMode=not_available`, pronunciation and fluency remain unassessed, and no timing/duration/CEFR/percentage/streak/model-memory claims appear.
 - [ ] The prompt does not call or mention a successful Action, plugin, API request, or save.
 
@@ -59,6 +61,6 @@ Module 9 deepens the ordinary Chat + GPT-Live path. Automated contract, renderin
 
 - [x] No OpenAI API key or ChatGPT session token is required or documented.
 - [x] The Chat workflow prompt contains no credential-shaped material.
-- [x] `npm run check` passes on the final module source (56 tests; 68 repository files scanned for secrets).
-- [x] Module 9 source and deployment commit/tag are pushed; the final deployment handoff records live Site version 4.
+- [x] `npm run check` passes on the final module source (57 tests; 69 repository files scanned for secrets).
+- [ ] Module 10 source and deployment commit/tag are pushed; the final deployment handoff records the live version.
 - [x] `HANDOFF.md` names the current status, limitations, and next decision.

@@ -40,6 +40,7 @@ See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
 | 7. Private Custom GPT launch | Complete | `module-7-private-gpt` tag | Only-me GPT, encrypted custom-header credential, live Action save, dashboard reload verification |
 | 8. Chat + GPT-Live clipboard loop | Complete and deployed | `7282200` / `module-8-chat-gpt-live` | Voice-first launcher, full post-Voice prompt, one-click clipboard import, 64 KiB limit, primary-flow docs |
 | 9. Deep oral review | Complete and deployed | `cec7a53` / `module-9-deep-oral-review` | v1.1 deep review, multi-segment coverage, up to 12 issues, live pronunciation/fluency evidence boundary, richer dashboard and Obsidian export |
+| 10. Voice checkpoint transcript bridge | Source complete; release pending | next commit/tag | Labelled live checkpoints and end-of-Voice oral recap for pronunciation, fluency, naturalness, and grammar feedback that remains in Chat text |
 
 ## Current implementation
 
@@ -67,17 +68,19 @@ See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
 - Module 8 does not delete or reconfigure the existing private GPT, Action route, D1 data, or Sites bypass credential. That path remains optional and must stay private.
 - Module 9 keeps v1.0 records and the legacy Action path compatible while adding `reviewSchemaV11` for the default Chat flow. Transcript evidence now drives multi-segment deep review, while oral observations are accepted only when the same Voice context supplies direct audio evidence or an explicit checkpoint.
 - The dashboard now displays the full v1.1 issue list, segment drills, oral observations, live corrections, and an explicit “no audio evidence” boundary. Obsidian export includes the same sections.
+- Module 10 adds a spoken `[EGLearn live checkpoint]` protocol every few substantive turns and a `[EGLearn oral recap]` before ending Voice. The post-Voice prompt uses those labelled coach messages as oral evidence only; it rejects them as learner evidence.
+- `oralAnalysis.evidenceMode=live_checkpoint` distinguishes this path from a future raw-audio path and keeps v1.0/v1.1 stored records compatible.
 
 ## Current release
 
 - Private MVP: `https://eglearn-speaking.hd701108.chatgpt.site`
 - Optional private Custom GPT: `https://chatgpt.com/g/g-6a78065a98848191843ca75c4f0d7c36-eglearn-kou-yu-jiao-lian`
-- Site deployment: version 4 from commit `cec7a53e507bff283d69caffdded1800ff9413ac`
+- Site deployment: version 4 from commit `cec7a53e507bff283d69caffdded1800ff9413ac` (Module 10 deployment pending)
 - Site access: owner-only custom access, zero allowed groups, zero external visitors.
 - GPT visibility: `Only me`. Do not change it while the shared personal Action credential is configured.
 - The Sites bypass value was rotated during Module 7 setup. The current value is stored only by Sites and GPT Builder and is intentionally absent from this handoff and Git.
 - The Module 6 source passes 48 automated contract, Action, sync, UI, and storage tests plus lint, production build, and secret scan.
-- The Module 8 source passes 52 automated Chat-prompt, contract, Action-regression, sync, UI, and storage tests. Module 9 passes 56 tests plus lint, production build, and secret scan (69 repository files). The private Site is deployed as version 4.
+- The Module 8 source passes 52 automated Chat-prompt, contract, Action-regression, sync, UI, and storage tests. Module 9 passes 56 tests plus lint, production build, and secret scan (69 repository files). Module 10 currently passes 57 tests plus the same checks; the private Site remains on version 4 until Module 10 is deployed.
 - The dashboard currently contains one synthetic acceptance record created by the live Action smoke test. It is clearly about the EGLearn project and may be removed with **删除全部记录** before real usage if the learner wants an empty history.
 
 ## Commands
@@ -92,7 +95,7 @@ npm run check
 
 ## Next concrete task
 
-In the ChatGPT desktop app open a new empty **Chat**, choose **Start new voice chat** before sending any text, read the Site's starter, and complete one real 15–20 minute practice. End Voice, copy the Site's deep-review prompt into the same Chat, copy the JSON result, and use **从剪贴板读取并检查** on the dashboard. Confirm that the history shows multiple segments, the complete issue list, and the audio boundary or directly heard observations. Then run the short-sample, prompt-injection, and clipboard-denial cases in `docs/ACCEPTANCE.md`.
+Deploy Module 10, then in the ChatGPT desktop app open a new empty **Chat**, choose **Start new voice chat** before sending any text, read the Site's starter, and complete one real 15–20 minute practice. Confirm that `[EGLearn live checkpoint]` appears during Voice and `[EGLearn oral recap]` appears before ending. Paste the deep-review prompt into the same Chat, copy the JSON result, and use **从剪贴板读取并检查** on the dashboard. Confirm that history shows the checkpoint evidence separately from learner issues. Then run the short-sample, prompt-injection, and clipboard-denial cases in `docs/ACCEPTANCE.md`.
 
 ## Open risks
 

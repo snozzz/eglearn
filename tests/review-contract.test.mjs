@@ -77,10 +77,18 @@ test("requires the explicit audio boundary for transcript-only v1.1 reviews", ()
   review.oralAnalysis.fluency.status = "unassessed";
   review.oralAnalysis.fluency.band = null;
   review.oralAnalysis.fluency.signals = [];
+  review.oralAnalysis.liveCheckpoints = [];
   review.scores.fluency = { status: "unassessed", band: null, basis: "none", rationaleZh: "没有可核对的音频证据，暂不评估。" };
   review.pronunciation = { status: "unassessed", reasonZh: audioEvidenceUnavailableReasonZh };
   assert.equal(reviewSchemaV11.safeParse(review).success, true);
   review.pronunciation.reasonZh = "文字看起来很流利。";
+  assert.equal(reviewSchemaV11.safeParse(review).success, false);
+});
+
+test("keeps coach checkpoints separate from learner evidence", () => {
+  const review = structuredClone(validReviewV11);
+  review.oralAnalysis.liveCheckpoints[0].learnerRepeatEn = "vulnerabilities";
+  review.keyIssues[0].original = "[EGLearn live checkpoint] vulnerabilities";
   assert.equal(reviewSchemaV11.safeParse(review).success, false);
 });
 

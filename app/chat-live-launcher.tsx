@@ -41,7 +41,7 @@ export function ChatLiveLauncher() {
         <article className="launcherCard">
           <span className="launcherNumber">01</span>
           <h3>对着 GPT-Live 读开场口令</h3>
-          <p>启动 Voice 后照着读即可。它会先问你想练的真实场景，并让你多开口；听到高置信度发音问题时会短暂纠正并让你重说。</p>
+          <p>启动 Voice 后照着读即可。它会先问你想练的真实场景，并让你多开口；每隔几轮会用 <code>[EGLearn live checkpoint]</code> 记录发音、流利度或自然度，结束前再做一段可留在 Chat 里的口语小结。</p>
           <blockquote>{voiceStarterSpoken}</blockquote>
           <button type="button" onClick={() => void copy(voiceStarterSpoken, "starter")}>复制开场口令</button>
           <small>复制是为了方便对照；不要在启动 Voice 之前把它发进 Chat。</small>

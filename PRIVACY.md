@@ -7,7 +7,7 @@ EGLearn uses a private Sites database for user-confirmed structured review stora
 - Voice and chat content stay in the user's ChatGPT account and are governed by the user's ChatGPT settings and OpenAI terms.
 - In the default Chat + GPT-Live path, the user explicitly copies the post-Voice structured review from Chat and pastes or reads it from the clipboard in EGLearn. EGLearn cannot read the ChatGPT conversation automatically.
 - Only after the user previews and confirms the structured review does the dashboard send it to the private EGLearn Sites D1 database and cache it in IndexedDB in the current browser profile.
-- The dashboard does not upload raw audio or a separate full transcript. A v1.1 review may contain a small, user-visible record of a Voice checkpoint (target word, correction cue, and whether the repeat improved); it still does not upload an audio file. If cloud sync is unavailable, the review remains in the local cache until the user retries synchronization.
+- The dashboard does not upload raw audio or a separate full transcript. A v1.1 review may contain a small, user-visible record of a Voice checkpoint or oral recap (target word, correction cue, naturalness/fluency observation, and whether the repeat improved); it still does not upload an audio file. If cloud sync is unavailable, the review remains in the local cache until the user retries synchronization.
 - Obsidian Vault name and target folder are stored in browser local storage on the current device.
 - Downloaded or copied Markdown is controlled by the user and may be moved into an Obsidian vault.
 
