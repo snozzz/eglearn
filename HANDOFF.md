@@ -42,7 +42,7 @@ See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
 | 9. Deep oral review | Complete and deployed | `cec7a53` / `module-9-deep-oral-review` | v1.1 deep review, multi-segment coverage, up to 12 issues, live pronunciation/fluency evidence boundary, richer dashboard and Obsidian export |
 | 10. Voice checkpoint transcript bridge | Complete and deployed | `0561202` / `module-10-live-checkpoints` | Labelled live checkpoints and end-of-Voice oral recap for pronunciation, fluency, naturalness, and grammar feedback that remains in Chat text |
 | 11. Import error diagnostics | Complete and deployed | `579e90b` / `module-11-import-diagnostics` | Version-aware validation and actionable field errors instead of generic `Invalid input` |
-| 12. Chat review import compatibility | Complete; pending deployment | — | v1.1 strengths retain up to three evidence quotes; transcript-only fluency accepts the historical `not_available` alias and normalizes it to `none`; generation prompt now states both constraints explicitly |
+| 12. Chat review import compatibility | Complete and deployed | `cb85545` / `module-12-chat-review-import` | v1.1 strengths retain up to three evidence quotes; transcript-only fluency accepts the historical `not_available` alias and normalizes it to `none`; generation prompt now states both constraints explicitly |
 
 ## Current implementation
 
@@ -78,12 +78,12 @@ See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
 
 - Private MVP: `https://eglearn-speaking.hd701108.chatgpt.site`
 - Optional private Custom GPT: `https://chatgpt.com/g/g-6a78065a98848191843ca75c4f0d7c36-eglearn-kou-yu-jiao-lian`
-- Site deployment: version 6 from commit `579e90b129b650141d569b7f48698c1c9e470c51`
+- Site deployment: version 7 from commit `cb855457783e93dd94b33f9aa756fc42517b5968`
 - Site access: owner-only custom access, zero allowed groups, zero external visitors.
 - GPT visibility: `Only me`. Do not change it while the shared personal Action credential is configured.
 - The Sites bypass value was rotated during Module 7 setup. The current value is stored only by Sites and GPT Builder and is intentionally absent from this handoff and Git.
 - The Module 6 source passes 48 automated contract, Action, sync, UI, and storage tests plus lint, production build, and secret scan.
-- The Module 8 source passes 52 automated Chat-prompt, contract, Action-regression, sync, UI, and storage tests. Module 9 passes 56 tests plus lint, production build, and secret scan (69 repository files). Module 10 passes 57 tests plus the same checks. Module 11 passes 59 tests plus the same checks; Module 12 passes 63 tests plus lint, production build, and secret scan. The private Site remains deployed as version 6; Module 12 is awaiting deployment.
+- The Module 8 source passes 52 automated Chat-prompt, contract, Action-regression, sync, UI, and storage tests. Module 9 passes 56 tests plus lint, production build, and secret scan (69 repository files). Module 10 passes 57 tests plus the same checks. Module 11 passes 59 tests plus the same checks; Module 12 passes 63 tests plus lint, production build, and secret scan. The private Site is deployed as version 7.
 - The dashboard currently contains one synthetic acceptance record created by the live Action smoke test. It is clearly about the EGLearn project and may be removed with **删除全部记录** before real usage if the learner wants an empty history.
 
 ## Commands
@@ -98,7 +98,7 @@ npm run check
 
 ## Next concrete task
 
-Refresh the deployed dashboard, then re-import the same supplied review JSON to verify Module 12 in the live page. If a review is rejected, read the field-level error shown under the import box. For a new practice, open a new empty **Chat**, choose **Start new voice chat** before sending any text, read the Site's starter, and confirm `[EGLearn live checkpoint]` and `[EGLearn oral recap]` appear before copying the deep-review JSON into EGLearn.
+Refresh the deployed online dashboard, then re-import the same supplied review JSON to verify Module 12 in the live page. If a review is rejected, read the field-level error shown under the import box. For a new practice, open a new empty **Chat**, choose **Start new voice chat** before sending any text, read the Site's starter, and confirm `[EGLearn live checkpoint]` and `[EGLearn oral recap]` appear before copying the deep-review JSON into EGLearn.
 
 ## Open risks
 
