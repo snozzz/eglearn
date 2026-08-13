@@ -54,6 +54,26 @@ test("rejects prose outside the single JSON block", () => {
   assert.equal(result.success, false);
 });
 
+test("flattens union validation errors into actionable field messages", () => {
+  const review = clone();
+  review.topicEn = 42;
+
+  const result = parseReviewText(JSON.stringify(review));
+  assert.equal(result.success, false);
+  assert.ok(result.errors.some((error) => error.startsWith("topicEn: ")));
+  assert.ok(!result.errors.includes("review: Invalid input"));
+});
+
+test("uses the matching schema for a versioned review", () => {
+  const review = structuredClone(validReviewV11);
+  delete review.oralAnalysis;
+
+  const result = parseReviewText(JSON.stringify(review));
+  assert.equal(result.success, false);
+  assert.ok(result.errors.some((error) => error.startsWith("oralAnalysis: ")));
+  assert.ok(!result.errors.includes("review: Invalid input"));
+});
+
 test("rejects pronunciation assessment and extra fields", () => {
   const review = clone();
   review.pronunciation = { status: "assessed", band: 5, reasonZh: "听起来很好。" };
