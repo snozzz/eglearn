@@ -74,6 +74,64 @@ test("uses the matching schema for a versioned review", () => {
   assert.ok(!result.errors.includes("review: Invalid input"));
 });
 
+test("imports a deep transcript-only review without dropping evidence", () => {
+  const review = structuredClone(validReviewV11);
+  review.strengths[0].evidence.push(
+    { quote: "We compared both options before deciding." },
+    { quote: "The final choice balanced speed and reliability." },
+  );
+  review.oralAnalysis.evidenceMode = "not_available";
+  review.oralAnalysis.pronunciation.status = "unassessed";
+  review.oralAnalysis.pronunciation.observations = [];
+  review.oralAnalysis.fluency.status = "unassessed";
+  review.oralAnalysis.fluency.band = null;
+  review.oralAnalysis.fluency.signals = [];
+  review.oralAnalysis.liveCheckpoints = [];
+  review.scores.fluency = {
+    status: "unassessed",
+    band: null,
+    basis: "not_available",
+    rationaleZh: "当前没有可核对的音频证据，暂不评估流利度。",
+  };
+  review.pronunciation = { status: "unassessed", reasonZh: audioEvidenceUnavailableReasonZh };
+
+  const result = parseReviewText(JSON.stringify(review));
+  assert.equal(result.success, true);
+  assert.equal(result.data.strengths[0].evidence.length, 3);
+  assert.equal(result.data.scores.fluency.basis, "none");
+});
+
+test("does not normalize not_available for an assessed v1.1 fluency score", () => {
+  const review = structuredClone(validReviewV11);
+  review.scores.fluency.basis = "not_available";
+
+  const result = parseReviewText(JSON.stringify(review));
+  assert.equal(result.success, false);
+  assert.ok(result.errors.some((error) => error.startsWith("scores.fluency.basis: ")));
+});
+
+test("does not migrate the v1.0 fluency basis alias", () => {
+  const review = structuredClone(validReview);
+  review.scores.fluency.basis = "not_available";
+
+  const result = parseReviewText(JSON.stringify(review));
+  assert.equal(result.success, false);
+  assert.ok(result.errors.some((error) => error.startsWith("scores.fluency.basis: ")));
+});
+
+test("rejects a v1.1 strength with more than three evidence quotes", () => {
+  const review = structuredClone(validReviewV11);
+  review.strengths[0].evidence.push(
+    { quote: "We compared both options before deciding." },
+    { quote: "The final choice balanced speed and reliability." },
+    { quote: "The team agreed on the final direction." },
+  );
+
+  const result = parseReviewText(JSON.stringify(review));
+  assert.equal(result.success, false);
+  assert.ok(result.errors.some((error) => error.startsWith("strengths.0.evidence: ")));
+});
+
 test("rejects pronunciation assessment and extra fields", () => {
   const review = clone();
   review.pronunciation = { status: "assessed", band: 5, reasonZh: "听起来很好。" };
