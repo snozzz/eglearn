@@ -219,6 +219,34 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .launcherHeading > p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.75; }
 .launcherHeading strong { color: var(--foreground); }
 
+.launcherSetup {
+  margin-bottom: 18px;
+  padding: 30px 34px;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+}
+
+.launcherSetup h3 { margin: 18px 0 8px; font-size: 19px; letter-spacing: -0.025em; }
+.launcherSetup > p { margin: 0 0 22px; max-width: 76ch; color: var(--muted); font-size: 13px; line-height: 1.7; }
+.launcherSetup strong { color: var(--foreground); }
+.launcherSetup button { padding: 12px 15px; border: 1px solid var(--line); border-radius: 4px; cursor: pointer; color: var(--foreground); background: transparent; font-size: 12px; font-weight: 650; }
+.launcherSetup button:hover { border-color: var(--accent); }
+.launcherSetup small { display: block; margin-top: 10px; color: #8a8f89; font-size: 10px; line-height: 1.5; }
+.launcherSetup details { margin-top: 18px; color: var(--muted); font-size: 11px; }
+.launcherSetup summary { cursor: pointer; }
+.launcherSetup blockquote {
+  margin: 14px 0 0;
+  padding: 18px;
+  border-left: 2px solid var(--accent);
+  color: #39423d;
+  background: #f1ede4;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 11px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
 .launcherGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -240,9 +268,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .launcherCard button:hover { border-color: var(--accent); }
 .launcherCard button.launcherPrimary { margin-top: 24px; border: 0; color: #fff8ee; background: var(--accent); }
 .launcherCard small { display: block; margin-top: 10px; color: #8a8f89; font-size: 10px; line-height: 1.5; }
-.launcherCard details { margin-top: 22px; color: #9fb0a5; font-size: 11px; }
+.launcherCard code { padding: 1px 5px; border-radius: 3px; background: #f1ede4; color: #39423d; font-family: var(--font-geist-mono), monospace; font-size: 11px; overflow-wrap: anywhere; }
+.launcherCard.accentCard code { background: #2c3a33; color: #e6ded1; }
+.launcherCard details { margin-top: 22px; color: var(--muted); font-size: 11px; }
+.launcherCard.accentCard details { color: #9fb0a5; }
 .launcherCard summary { cursor: pointer; }
 .launcherCard details p { margin: 9px 0 0; line-height: 1.6; }
+.launcherCard details button { margin-top: 14px; }
 .launcherNotice { margin: 16px 0 0; padding: 13px 15px; border: 1px solid #cad6cc; border-radius: 4px; color: #2f5d48; background: #edf3ed; font-size: 12px; }
 .launcherFallback { display: block; margin-top: 18px; color: var(--muted); font-size: 11px; }
 .launcherFallback textarea { display: block; width: 100%; min-height: 180px; margin-top: 8px; padding: 14px; resize: vertical; border: 1px solid var(--line); border-radius: 4px; background: var(--paper); font-family: var(--font-geist-mono), monospace; font-size: 10px; line-height: 1.55; }

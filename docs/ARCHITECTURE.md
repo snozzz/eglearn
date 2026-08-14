@@ -25,14 +25,24 @@ flowchart LR
 
 ## Default session boundary
 
+0. Once: paste `projectInstructions` into a ChatGPT Project's **Instructions** and practise inside that Project.
 1. Create a new, empty Chat in the ChatGPT desktop app.
 2. Select **Start new voice chat** before sending any message.
 3. Read the short starter beginning with `EGLearn session starts now`.
-4. Practise in English. GPT-Live may make at most five short, labelled `[EGLearn live checkpoint]` messages when it directly hears pronunciation, fluency, naturalness, or grammar feedback; repeat once and continue. Before ending, it gives a labelled `[EGLearn oral recap]` so the observations remain in the Chat transcript.
+4. Practise in English. Say `Checkpoint, please.` whenever you want a correction; GPT-Live may also start at most five short, labelled `[EGLearn live checkpoint]` messages when it directly hears pronunciation, fluency, naturalness, or grammar feedback. Repeat once and continue. Before ending, it gives a labelled `[EGLearn oral recap]` so the observations remain in the Chat transcript.
 5. Paste the complete review prompt into the same Chat.
 6. Copy the single JSON block, import it into EGLearn, preview the quoted evidence, and confirm the save.
 
-`lib/chat-live-prompts.mjs` is the single source for the spoken starter and complete review prompt. The prompt derives the controlled rule IDs and exact no-assessment reasons from the same review-contract module used by the dashboard parser.
+`lib/chat-live-prompts.mjs` is the single source for the resident project instructions, both spoken starters, the fixed checkpoint template, and the complete review prompt. The prompt derives the controlled rule IDs and exact no-assessment reasons from the same review-contract module used by the dashboard parser.
+
+### Why the protocol is resident instead of spoken
+
+A spoken bootstrap is the only way to configure a chat that must begin in Voice, but cadence rules like "every few turns" decay over a long conversation and the coach quietly stops issuing checkpoints. Project instructions persist for every voice chat in that Project without sending text first, so they preserve the required Voice-first entry while removing the decay. Two mechanisms cover the remaining gap:
+
+- **Learner-triggered checkpoints.** `Checkpoint, please.` is an explicit request the coach answers immediately, so checkpoint coverage no longer depends on the model remembering to count turns.
+- **A fixed spoken template.** `[EGLearn live checkpoint] <dimension>. Target: … Model: … Repeat: … Result: …` maps one-to-one onto `oralAnalysis.liveCheckpoints`, and the spoken result phrases map to the stored `outcome` enum. A free-form checkpoint is still accepted, with missing fields stored as `null`.
+
+This raises checkpoint recall and parse stability. It does not raise evidence quality: the coach's own hearing remains the only source, so `evidenceMode=live_checkpoint` stays qualitative and medium-confidence by design. Objective pronunciation or timing measurement would require EGLearn to capture the learner's audio itself, which this path deliberately does not do.
 
 The post-Voice transcript may not be verbatim, and a normal ChatGPT conversation does not promise a separate raw-audio file or word-level timing feed for EGLearn. Consequently the review has two explicit tracks:
 
@@ -49,7 +59,7 @@ The importer performs structural validation: it verifies that quotes exist and t
 
 ### Chat + GPT-Live launcher
 
-`app/chat-live-launcher.tsx` shows the required order, the spoken marker, and a one-click copy button for the complete review prompt. Clipboard failures reveal a selectable manual-copy field. The UI deliberately does not auto-open or inject text into ChatGPT, and it warns against sending text before Voice starts.
+`app/chat-live-launcher.tsx` shows the one-time Project setup, the required order, the spoken marker, the checkpoint trigger phrase, and one-click copy buttons for the project instructions, both starters, and the complete review prompt. Clipboard failures reveal a selectable manual-copy field. The UI deliberately does not auto-open or inject text into ChatGPT, and it warns against sending text before Voice starts.
 
 ### Review importer and dashboard
 

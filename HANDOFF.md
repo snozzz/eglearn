@@ -17,7 +17,7 @@ Hard requirements:
 
 - Ordinary Chat in the ChatGPT desktop app is the default voice surface because it provides GPT-Live.
 - A new practice must begin as an empty Chat with **Start new voice chat** selected before any text is sent; text-first chats offer dictation instead.
-- After Voice starts, the learner reads the short `EGLearn session starts now` marker and coaching instruction shown by the Site. The coach may make a few direct-audio pronunciation/flow checkpoints and ask for one repeat.
+- The coaching protocol lives in a ChatGPT Project's instructions so it stays loaded for every voice chat without sending text first. After Voice starts, the learner reads only the short `EGLearn session starts now` starter. The learner can force a checkpoint at any time by saying `Checkpoint, please.`; the coach may also make a few direct-audio pronunciation/flow checkpoints and ask for one repeat.
 - The user exits Voice, stays in the same Chat, pastes the complete self-contained v1.1 deep-review prompt, and copies the returned JSON.
 - The dashboard explicitly reads or accepts that copied JSON, validates it, previews evidence, and saves only after user confirmation.
 - Structured reviews are stored in Sites D1 and cached in browser IndexedDB.
@@ -43,6 +43,7 @@ See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
 | 10. Voice checkpoint transcript bridge | Complete and deployed | `0561202` / `module-10-live-checkpoints` | Labelled live checkpoints and end-of-Voice oral recap for pronunciation, fluency, naturalness, and grammar feedback that remains in Chat text |
 | 11. Import error diagnostics | Complete and deployed | `579e90b` / `module-11-import-diagnostics` | Version-aware validation and actionable field errors instead of generic `Invalid input` |
 | 12. Chat review import compatibility | Complete and deployed | `cb85545` / `module-12-chat-review-import` | v1.1 strengths retain up to three evidence quotes; transcript-only fluency accepts the historical `not_available` alias and normalizes it to `none`; generation prompt now states both constraints explicitly |
+| 13. Resident coach protocol | Source complete | `module-13-resident-protocol` | Protocol moves into ChatGPT Project instructions, learner-triggered `Checkpoint, please.`, fixed spoken checkpoint template mapped field-by-field onto `liveCheckpoints` |
 
 ## Current implementation
 
@@ -72,6 +73,10 @@ See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
 - The dashboard now displays the full v1.1 issue list, segment drills, oral observations, live corrections, and an explicit “no audio evidence” boundary. Obsidian export includes the same sections.
 - Module 10 adds a spoken `[EGLearn live checkpoint]` protocol every few substantive turns and a `[EGLearn oral recap]` before ending Voice. The post-Voice prompt uses those labelled coach messages as oral evidence only; it rejects them as learner evidence.
 - `oralAnalysis.evidenceMode=live_checkpoint` distinguishes this path from a future raw-audio path and keeps v1.0/v1.1 stored records compatible.
+- Module 13 addresses the reason live pronunciation feedback was unreliable: a spoken bootstrap decays over a long Voice session, so the coach stops issuing checkpoints. `projectInstructions` now carries the whole protocol for a ChatGPT Project, `voiceStarterShortSpoken` keeps only the session marker and one instruction, and `voiceStarterSpoken` remains the full no-Project fallback. All three come from one shared `checkpointProtocol` constant.
+- Checkpoints are now learner-triggered first: `Checkpoint, please.` must always produce one, with at most five coach-initiated checkpoints per session. The spoken checkpoint is a fixed one-line template (`dimension. Target: … Model: … Repeat: … Result: …`) and the review prompt maps each field onto `oralAnalysis.liveCheckpoints`, including `improved after repeat → improved_after_repeat` and the other three outcome phrases. Labelled but free-form checkpoints are still accepted with `null` fields.
+- Module 13 changes prompts, launcher UI, and docs only. `lib/review-contract.mjs`, the stored schema, D1, and the legacy Action path are untouched, so existing records stay valid.
+- Recorded ceiling: this raises checkpoint recall and parse stability, not evidence quality. `evidenceMode=live_checkpoint` remains the coach's own hearing and stays qualitative/medium-confidence. Objective pronunciation or timing scoring would require capturing learner audio, which the user has explicitly deferred as too manual.
 - Module 12 keeps all three v1.1 strength evidence quotes instead of rejecting or truncating them, and canonicalizes transcript-only `scores.fluency.basis=not_available` to the stored contract value `none`. The generated review prompt now explicitly requires at most three evidence quotes per strength and `basis=none` when audio is unavailable. The supplied full v1.1 review imported successfully in the local page without being saved; no personal content was added to fixtures.
 
 ## Current release
@@ -83,7 +88,7 @@ See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
 - GPT visibility: `Only me`. Do not change it while the shared personal Action credential is configured.
 - The Sites bypass value was rotated during Module 7 setup. The current value is stored only by Sites and GPT Builder and is intentionally absent from this handoff and Git.
 - The Module 6 source passes 48 automated contract, Action, sync, UI, and storage tests plus lint, production build, and secret scan.
-- The Module 8 source passes 52 automated Chat-prompt, contract, Action-regression, sync, UI, and storage tests. Module 9 passes 56 tests plus lint, production build, and secret scan (69 repository files). Module 10 passes 57 tests plus the same checks. Module 11 passes 59 tests plus the same checks; Module 12 passes 63 tests plus lint, production build, and secret scan. The private Site is deployed as version 7.
+- The Module 8 source passes 52 automated Chat-prompt, contract, Action-regression, sync, UI, and storage tests. Module 9 passes 56 tests plus lint, production build, and secret scan (69 repository files). Module 10 passes 57 tests plus the same checks. Module 11 passes 59 tests plus the same checks; Module 12 passes 63 tests plus lint, production build, and secret scan; Module 13 passes 67 tests plus the same checks. The private Site is deployed as version 7 (Module 12); Module 13 is not deployed yet.
 - The dashboard currently contains one synthetic acceptance record created by the live Action smoke test. It is clearly about the EGLearn project and may be removed with **删除全部记录** before real usage if the learner wants an empty history.
 
 ## Commands
@@ -98,7 +103,7 @@ npm run check
 
 ## Next concrete task
 
-Refresh the deployed online dashboard, then re-import the same supplied review JSON to verify Module 12 in the live page. If a review is rejected, read the field-level error shown under the import box. For a new practice, open a new empty **Chat**, choose **Start new voice chat** before sending any text, read the Site's starter, and confirm `[EGLearn live checkpoint]` and `[EGLearn oral recap]` appear before copying the deep-review JSON into EGLearn.
+Deploy Module 13, then do one real practice to check the resident protocol end to end: create a ChatGPT Project named e.g. `EGLearn Speaking`, paste the copied coach protocol into its **Instructions**, open a new empty **Chat** inside that Project, choose **Start new voice chat** before sending any text, read the one-sentence starter, say `Checkpoint, please.` at least twice, and confirm the coach answers with the fixed `[EGLearn live checkpoint]` line and closes with `[EGLearn oral recap]`. Then paste the deep-review prompt and check that `liveCheckpoints` carries the template fields and mapped outcomes. If the client cannot start Voice inside a Project, record that finding here and use custom instructions or the full spoken starter instead.
 
 ## Open risks
 
@@ -106,6 +111,8 @@ Refresh the deployed online dashboard, then re-import the same supplied review J
 - A post-Voice text context cannot support pronunciation scoring or precise fluency timing. Only direct Voice evidence/checkpoints may add qualitative oral observations; this is not a phoneme, accent, WPM, or duration analyzer.
 - The private Action credential is single-owner. Publishing or sharing the GPT requires per-user OAuth and owner-isolated rows first.
 - Ordinary Chat has no EGLearn plugin or Action context, so the full post-Voice review prompt must be pasted every practice. A short command alone is not reliable.
-- Starting the Chat with a text bootstrap defeats the intended GPT-Live entry path; the short coaching instruction must be spoken after Voice starts.
+- Starting the Chat with a text bootstrap defeats the intended GPT-Live entry path; the short coaching instruction must be spoken after Voice starts. Project instructions are the only tested way to keep the long protocol resident without sending text.
+- Whether the current ChatGPT desktop client can start a new voice chat inside a Project is unverified in this repository. If it cannot, the documented fallbacks are custom instructions or the full spoken starter.
+- No prompt can make live pronunciation feedback objective. The ASR transcript normalizes mispronunciations away, and the Voice model's own phoneme judgements are inconsistent, so checkpoint text is the ceiling of this path.
 - Unsynced IndexedDB fallback records remain device/profile-local and can be cleared by browser settings.
 - Browser automation could not claim the localhost preview because the browser URL policy blocked local control. Production builds, server-render tests, live HTTP content checks, and pure IndexedDB tests provide the current automated evidence; manual visual acceptance remains in `docs/ACCEPTANCE.md`.

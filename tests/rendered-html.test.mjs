@@ -25,6 +25,10 @@ test("server-renders the EGLearn product shell", async () => {
   assert.match(html, /无需 OpenAI API/);
   assert.match(html, /Chat \+ GPT-Live/);
   assert.match(html, /先开 Voice，再开始练/);
+  assert.match(html, /把教练协议放进 ChatGPT Project/);
+  assert.match(html, /复制教练协议/);
+  assert.match(html, /Checkpoint, please\./);
+  assert.match(html, /EGLearn live checkpoint/);
   assert.match(html, /复制深度复盘口令/);
   assert.match(html, /Voice 中可以即时纠音/);
   assert.match(html, /Obsidian 是可选出口/);
