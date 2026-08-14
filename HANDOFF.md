@@ -43,7 +43,7 @@ See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
 | 10. Voice checkpoint transcript bridge | Complete and deployed | `0561202` / `module-10-live-checkpoints` | Labelled live checkpoints and end-of-Voice oral recap for pronunciation, fluency, naturalness, and grammar feedback that remains in Chat text |
 | 11. Import error diagnostics | Complete and deployed | `579e90b` / `module-11-import-diagnostics` | Version-aware validation and actionable field errors instead of generic `Invalid input` |
 | 12. Chat review import compatibility | Complete and deployed | `cb85545` / `module-12-chat-review-import` | v1.1 strengths retain up to three evidence quotes; transcript-only fluency accepts the historical `not_available` alias and normalizes it to `none`; generation prompt now states both constraints explicitly |
-| 13. Resident coach protocol | Source complete | `module-13-resident-protocol` | Protocol moves into ChatGPT Project instructions, learner-triggered `Checkpoint, please.`, fixed spoken checkpoint template mapped field-by-field onto `liveCheckpoints` |
+| 13. Resident coach protocol | Complete and deployed | `8b76c63` / `module-13-resident-protocol` | Protocol moves into ChatGPT Project instructions, learner-triggered `Checkpoint, please.`, fixed spoken checkpoint template mapped field-by-field onto `liveCheckpoints` |
 
 ## Current implementation
 
@@ -83,12 +83,12 @@ See `docs/ARCHITECTURE.md` for constraints, rationale, and official sources.
 
 - Private MVP: `https://eglearn-speaking.hd701108.chatgpt.site`
 - Optional private Custom GPT: `https://chatgpt.com/g/g-6a78065a98848191843ca75c4f0d7c36-eglearn-kou-yu-jiao-lian`
-- Site deployment: version 7 from commit `cb855457783e93dd94b33f9aa756fc42517b5968`
+- Site deployment: version 8 from commit `8b76c63352e0b90f6b8c61f59f4bfbc75e36d2f5`
 - Site access: owner-only custom access, zero allowed groups, zero external visitors.
 - GPT visibility: `Only me`. Do not change it while the shared personal Action credential is configured.
 - The Sites bypass value was rotated during Module 7 setup. The current value is stored only by Sites and GPT Builder and is intentionally absent from this handoff and Git.
 - The Module 6 source passes 48 automated contract, Action, sync, UI, and storage tests plus lint, production build, and secret scan.
-- The Module 8 source passes 52 automated Chat-prompt, contract, Action-regression, sync, UI, and storage tests. Module 9 passes 56 tests plus lint, production build, and secret scan (69 repository files). Module 10 passes 57 tests plus the same checks. Module 11 passes 59 tests plus the same checks; Module 12 passes 63 tests plus lint, production build, and secret scan; Module 13 passes 67 tests plus the same checks. The private Site is deployed as version 7 (Module 12); Module 13 is not deployed yet.
+- The Module 8 source passes 52 automated Chat-prompt, contract, Action-regression, sync, UI, and storage tests. Module 9 passes 56 tests plus lint, production build, and secret scan (69 repository files). Module 10 passes 57 tests plus the same checks. Module 11 passes 59 tests plus the same checks; Module 12 passes 63 tests plus lint, production build, and secret scan; Module 13 passes 67 tests plus the same checks and is deployed as version 8.
 - The dashboard currently contains one synthetic acceptance record created by the live Action smoke test. It is clearly about the EGLearn project and may be removed with **删除全部记录** before real usage if the learner wants an empty history.
 
 ## Commands
@@ -103,7 +103,7 @@ npm run check
 
 ## Next concrete task
 
-Deploy Module 13, then do one real practice to check the resident protocol end to end: create a ChatGPT Project named e.g. `EGLearn Speaking`, paste the copied coach protocol into its **Instructions**, open a new empty **Chat** inside that Project, choose **Start new voice chat** before sending any text, read the one-sentence starter, say `Checkpoint, please.` at least twice, and confirm the coach answers with the fixed `[EGLearn live checkpoint]` line and closes with `[EGLearn oral recap]`. Then paste the deep-review prompt and check that `liveCheckpoints` carries the template fields and mapped outcomes. If the client cannot start Voice inside a Project, record that finding here and use custom instructions or the full spoken starter instead.
+Do one real practice to check the resident protocol end to end: create a ChatGPT Project named e.g. `EGLearn Speaking`, paste the copied coach protocol into its **Instructions**, open a new empty **Chat** inside that Project, choose **Start new voice chat** before sending any text, read the one-sentence starter, say `Checkpoint, please.` at least twice, and confirm the coach answers with the fixed `[EGLearn live checkpoint]` line and closes with `[EGLearn oral recap]`. Then paste the deep-review prompt and check that `liveCheckpoints` carries the template fields and mapped outcomes. If the client cannot start Voice inside a Project, record that finding here and use custom instructions or the full spoken starter instead.
 
 ## Open risks
 
